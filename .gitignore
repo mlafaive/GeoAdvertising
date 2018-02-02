@@ -1,4 +1,5 @@
 __pycache__/*
+controllers/__pycache__/*
 .DS_Store
 extensions.pyc
 config.pyc
