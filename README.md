@@ -21,7 +21,7 @@
 <p>run `mysql -u root -p geo_adv_db < create_tables.sql` (password: root)</p>
 <p>run `mysql -u root -p geo_adv_db < load_data.sql` (password: root)</p>
 
-<h2 id="#running">Run Server</h2>
+<h2 id="running">Run Server</h2>
 <p>run `python app.py` and go to http://localhost:3000/</p>
 
 
