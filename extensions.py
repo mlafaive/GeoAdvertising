@@ -1,15 +1,15 @@
-import pymysql
-import pymysql.cursors
+import psycopg2
 import config
 
 def connect_to_database():
-  options = {
+
+  params = {
     'host': config.env['host'],
+    'database': config.env['db'],
     'user': config.env['user'],
-    'passwd': config.env['password'],
-    'db': config.env['db'],
-    'cursorclass' : pymysql.cursors.DictCursor
+    'password': config.env['password']
   }
-  db = pymysql.connect(**options)
-  db.autocommit(True)
+ 
+  # connect to the PostgreSQL server
+  db = psycopg2.connect(**params)
   return db

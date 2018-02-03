@@ -3,7 +3,6 @@ import extensions
 import controllers
 from controllers import *
 import config
-import hashlib, glob, os
 
 from werkzeug.utils import secure_filename
 

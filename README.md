@@ -16,10 +16,12 @@
 <p>run `pip install -r requirements.txt`</p>
 
 <h2 id="db-setup">Set up Database</h2>
-<p><a href="https://dev.mysql.com/doc/refman/5.7/en/installing.html" target="_blank">install mysql</a></p>
-<p>log into mysql with `mysql -u root -p` (password: root) and run `CREATE DATABASE geo_adv_db;`</p>
-<p>run `mysql -u root -p geo_adv_db < create_tables.sql` (password: root)</p>
-<p>run `mysql -u root -p geo_adv_db < load_data.sql` (password: root)</p>
+<p><a href="https://www.postgresql.org/download/" target="_blank">install PostgreSQL</a></p>
+<p>create user with command `createuser postgres -s -d`</p>
+<p>log into PostgreSQL with `psql postgres`</p>
+<p>set password with `\password password`</p>
+<p>create tables with `\i create_tables.sql`</p>
+<p>load_data with `\i load_data.sql`</p>
 
 <h2 id="running">Run Server</h2>
 <p>run `python app.py` and go to http://localhost:3000/</p>
