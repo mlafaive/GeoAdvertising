@@ -24,4 +24,4 @@ def handle_error(error=None):
 if __name__ == '__main__':
     # listen on external IPs
     port = int(os.environ.get('PORT', config.env['port']))
-    app.run(host=config.env['host'], port=port)
+    app.run(host=config.env['host'], port=port, debug=True)
