@@ -3,6 +3,7 @@ import extensions
 import controllers
 from controllers import *
 import config
+import os
 
 from werkzeug.utils import secure_filename
 
@@ -22,4 +23,5 @@ def handle_error(error=None):
 # For us, listen to port 3000 so you can just run 'python app.py' to start the server
 if __name__ == '__main__':
     # listen on external IPs
-    app.run(host=config.env['host'], port=config.env['port'], debug=True)
+    port = int(os.environ.get('PORT', config.env['port']))
+    app.run(host=config.env['host'], port=port)
