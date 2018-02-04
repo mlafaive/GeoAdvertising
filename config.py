@@ -1,10 +1,6 @@
-# Do NOT commit this file to github
-# Make a seperate one for your deployed environment
-# Do not change the host, it is referring to database host not website host
+import os
+
 env = dict(
 	host = '0.0.0.0',
-	port = 3000,
-	user = 'postgres', 
-	password = 'password',
-	db = 'geo_adv_db'
+	port = int(os.environ.get('PORT', 3000)),
 )
