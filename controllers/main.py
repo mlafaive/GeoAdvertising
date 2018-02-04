@@ -1,5 +1,6 @@
 from flask import *
 import flask
+from models import User
 
 import werkzeug.exceptions as ex
 
