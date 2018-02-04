@@ -1,9 +1,11 @@
 from flask import *
+import os
 import extensions
 import controllers
 from controllers import *
 import config
-import os
+
+from flask_sqlalchemy import SQLAlchemy
 
 from werkzeug.utils import secure_filename
 
@@ -14,6 +16,10 @@ app = Flask(__name__)
 
 # Register the controllers
 app.register_blueprint(controllers.main)
+
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
+db = SQLAlchemy(app)
 
 @app.errorhandler(404)
 def handle_error(error=None):

@@ -1,6 +1,7 @@
 import psycopg2
 import config
 
+
 def connect_to_database():
 
   params = {
