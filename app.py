@@ -1,6 +1,5 @@
 from flask import *
 import os
-import extensions
 import controllers
 from controllers import *
 import config
@@ -20,10 +19,6 @@ app.register_blueprint(controllers.main)
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
 db = SQLAlchemy(app)
-
-@app.errorhandler(404)
-def handle_error(error=None):
-	return not_found(error)
 
 # Listen on external IPs
 # For us, listen to port 3000 so you can just run 'python app.py' to start the server

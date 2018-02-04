@@ -2,7 +2,6 @@ from flask import *
 import flask
 
 import werkzeug.exceptions as ex
-from extensions import connect_to_database
 
 main = Blueprint('main', __name__)
 
