@@ -10,9 +10,6 @@ def not_found(error=None):
     }
     resp = jsonify(message)
     resp.status_code = 404
-
-    print(resp)
-
     return resp
 
 
