@@ -10,7 +10,7 @@ main = Blueprint('main', __name__)
 @main.route('/')
 def main_hello():
     all_users = User.query.all()
-    resp = jsonify(all_users)
+    resp = jsonify(json_list=[i.serialize for i in all_users])
     resp.status_code = 200
     return resp
 
