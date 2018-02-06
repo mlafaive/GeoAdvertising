@@ -4,6 +4,7 @@ from models import User
 
 import werkzeug.exceptions as ex
 
+
 main = Blueprint('main', __name__)
 
 @main.route('/')

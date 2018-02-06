@@ -1,4 +1,4 @@
-from models import User, db
+from .user import *
 
 db.create_all()
 db.session.commit()

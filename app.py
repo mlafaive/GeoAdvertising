@@ -1,24 +1,20 @@
 from flask import *
-import os
 import controllers
-from controllers import *
+from controllers import main
 import config
 
-from flask_sqlalchemy import SQLAlchemy
+from extensions import *
 
-from werkzeug.utils import secure_filename
-
-
-
-# Initialize Flask app with the template folder address
+# Initialize Flask app
 app = Flask(__name__)
 
 # Register the controllers
-app.register_blueprint(controllers.main)
+app.register_blueprint(main)
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']
-db = SQLAlchemy(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
+
+db.init_app(app) 
 
 # Listen on external IPs
 # For us, listen to port 3000 so you can just run 'python app.py' to start the server
