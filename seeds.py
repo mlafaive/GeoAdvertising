@@ -31,6 +31,7 @@ if __name__ == '__main__':
 			db.session.commit()
 
 			User.query.delete()
+			print('To reset ids run reset from heroku account')
 			
 		
 
