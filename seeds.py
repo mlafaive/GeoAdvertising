@@ -1,7 +1,9 @@
-from .user import *
+from models import User
+
+db.reflect()
+db.drop_all()
 
 db.create_all()
-db.session.commit()
 
 user1 = User('Jack Smith')
 user2 = User('Jane Doe')
