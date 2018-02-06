@@ -3,9 +3,11 @@ from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from models import User
+import config
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
+	reset_db = DB_URL == config.env['local_db_url']
 	# Initialize Flask app
 	app = Flask(__name__)
 
@@ -15,15 +17,22 @@ if __name__ == '__main__':
 	with app.app_context():
 		db.init_app(app)
 
-		if database_exists(DB_URL):
-		    print('Deleting database.')
-		    drop_database(DB_URL)
-		if not database_exists(DB_URL):
-		    print('Creating database.')
-		    create_database(DB_URL)
+		if reset_db:
+			if database_exists(DB_URL):
+			    print('Deleting database.')
+			    drop_database(DB_URL)
+			if not database_exists(DB_URL):
+			    print('Creating database.')
+			    create_database(DB_URL)
+			db.create_all()
+			db.session.commit()
+		else:
+			db.create_all()
+			db.session.commit()
+
+			User.query.delete()
 			
-		db.create_all()
-		db.session.commit()
+		
 
 		user1 = User('Jack Smith')
 		user2 = User('Jane Doe')
