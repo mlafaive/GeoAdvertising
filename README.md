@@ -1,29 +1,25 @@
-<h1 id="top">Geo-Advertising</h1>
+# Geo-Advertising
 
-<h2>Steps to Run</h2>
-<ul>
-	<li><a href="#cloning">Clone repo</a></li>
-	<li><a href="#installing">Install packages</li>
-	<li><a href="#db-setup">Set up database</a></li>
-	<li><a href="#running">Run Server</a></li>
-<ul>
+## Steps to Run
+* [Clone repo](#clone-repo)
+* [Install current packages](#install-current-packages)
+* [Set up database](#set-up-database)
+* [Run Server](#run-server)
 
-<h2 id="cloning">Clone Repo</h2>
-<p>run `git clone https://github.com/mlafaive/GeoAdvertising.git`</p>
+### Clone Repo
+run `git clone https://github.com/mlafaive/GeoAdvertising.git`
 
-<h2 id="installing">Install Packages</h2>
-<p>If necessary, <a href="https://pip.pypa.io/en/stable/installing/" target="_blank">install pip</a></p>
-<p>run `pip install -r requirements.txt`</p>
+### Install Current Packages
+if necessary, install lastest [python3 release](https://www.python.org/downloads/)
 
-<h2 id="db-setup">Set up Database</h2>
-<p><a href="https://www.postgresql.org/download/" target="_blank">install PostgreSQL</a></p>
-<p>create user with command `createuser postgres -s -d`</p>
-<p>log into PostgreSQL with `psql postgres`</p>
-<p>set password with `\password password`</p>
-<p>create tables with `\i create_tables.sql`</p>
-<p>load_data with `\i load_data.sql`</p>
+run `pip3 install -r requirements.txt`
 
-<h2 id="running">Run Server</h2>
-<p>run `python app.py` and go to http://localhost:3000/</p>
+### Set up Database
+[install PostgreSQL](https://www.postgresql.org/download/)
+
+seed database with `python3 seed.py`
+
+### Run Server
+run `python3 app.py` and go to http://localhost:3000/
 
 
