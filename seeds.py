@@ -1,7 +1,6 @@
 from models import User
 from extensions import db
 
-db.reflect()
 db.drop_all()
 
 db.create_all()
