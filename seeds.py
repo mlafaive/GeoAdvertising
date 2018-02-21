@@ -4,6 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from models import Users, Businesses
 import config
+import datetime
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
@@ -34,9 +35,9 @@ if __name__ == '__main__':
 			print('To reset ids run reset from heroku account')
 			
 		
-
-		user1 = Users('Jack Smith')
-		user2 = Users('Jane Doe')
+		# name, user_type, email_address, phone_number, dob, password, salt, last_offer_time
+		user1 = Users('Jack Smith', 'consumer', 'jacksmith@gmail.com', '23456789012', 'password1', 'salt1', datetime.date(2018,2,21), datetime.date(2018,2,20))
+		user2 = Users('Jane Doe', 'manager', 'janedoe@gmail.com', '34567890123', 'password2', 'salt2')
 		db.session.add(user1)
 		db.session.add(user2)
 
