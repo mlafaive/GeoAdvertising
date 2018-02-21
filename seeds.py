@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import Users, Businesses, Interests
+from models import Users, Businesses, Interests, User_Interests
 import config
 import datetime
 
@@ -47,5 +47,8 @@ if __name__ == '__main__':
 
 		its1 = Interests('Sporting Goods')
 		db.session.add(its1)
+
+		uist1 = User_Interests(1,1)
+		db.session.add(uist1)
 
 		db.session.commit()
