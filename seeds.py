@@ -2,8 +2,9 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import User
+from models import Users, Businesses, Interests
 import config
+import datetime
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
@@ -34,9 +35,17 @@ if __name__ == '__main__':
 			print('To reset ids run reset from heroku account')
 			
 		
-
-		user1 = User('Jack Smith')
-		user2 = User('Jane Doe')
+		# name, user_type, email_address, phone_number, dob, password, salt, last_offer_time
+		user1 = Users('Jack Smith', 'consumer', 'jacksmith@gmail.com', '23456789012', 'password1', 'salt1', datetime.date(2018,2,21), datetime.date(2018,2,20))
+		user2 = Users('Jane Doe', 'manager', 'janedoe@gmail.com', '34567890123', 'password2', 'salt2')
 		db.session.add(user1)
 		db.session.add(user2)
+
+		#                  name,    business_type, store_address,          city_id, email_address,    phone_number, latitude,   longitude, manager_id,  unit_number=None
+		bis1 = Businesses('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 1)
+		db.session.add(bis1)
+
+		its1 = Interests('Sporting Goods')
+		db.session.add(its1)
+
 		db.session.commit()

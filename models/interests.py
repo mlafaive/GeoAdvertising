@@ -1,14 +1,15 @@
 from extensions import db
 
-class User(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), nullable=False)
+class Interests(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    name = db.Column(db.String(50), nullable=False)
 
     def __init__(self, name):
         self.name = name
 
+
     def __repr__(self):
-        return '<Name %r>' % self.name
+        return "<name='%s'>" % self.name
 
     @property
     def serialize(self):
@@ -17,3 +18,4 @@ class User(db.Model):
            'id': self.id,
            'name': self.name,
        }
+
