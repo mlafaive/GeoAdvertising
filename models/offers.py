@@ -3,17 +3,17 @@ from extensions import db
 class Offers(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     business_id = db.Column(db.Integer, nullable=False)
-    start_time = db.Column(db.Date, nullable=False)
-    end_time = db.Column(db.Date, nullable=False)
+    start_time = db.Column(db.DateTime, nullable=False)
+    end_time = db.Column(db.DateTime, nullable=False)
     title = db.Column(db.String(50), nullable=False)
     description = db.Column(db.String(100), nullable=False)
 
-    def __init__(self, title, description, business_id, start_time, end_time):
-        self.title = title
-        self.description = description
+    def __init__(self, business_id, start_time, end_time, title, description):
         self.business_id = business_id
         self.start_time = start_time
         self.end_time = end_time
+        self.title = title
+        self.description = description
 
 
     def __repr__(self):
