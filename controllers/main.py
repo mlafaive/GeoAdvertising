@@ -19,5 +19,3 @@ def main_hello():
     resp.status_code = 200
 
     return resp
-
-
