@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import Users, Businesses, Interests, User_Interests, Offers, Cities
+from models import Users, Businesses, Interests, User_Interests, Offers, Cities, Business_Offers
 import config
 import datetime
 
@@ -55,9 +55,14 @@ if __name__ == '__main__':
 		db.session.add(uist1)
 
 
+
 		db.session.commit()
 
 
 		off1 = Offers(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'Greatest Offer EVER!!! CASH CASH CASH', 'This is the description of the greatest offer og all time.')
 		db.session.add(off1)
+
+		bisoff1 = Business_Offers(1,1)
+		db.session.add(bisoff1)
+
 		db.session.commit()
