@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import Users, Businesses, Interests, User_Interests, Offers
+from models import Users, Businesses, Interests, User_Interests, Offers, Cities
 import config
 import datetime
 
@@ -40,6 +40,9 @@ if __name__ == '__main__':
 		user2 = Users('Jane Doe', 'manager', 'janedoe@gmail.com', '34567890123', 'password2', 'salt2')
 		db.session.add(user1)
 		db.session.add(user2)
+
+		cit1 = Cities('Ann Arbor', 'Michigan', 'EST')
+		db.session.add(cit1)
 
 		#                  name,    business_type, store_address,          city_id, email_address,    phone_number, latitude,   longitude, manager_id,  unit_number=None
 		bis1 = Businesses('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 1)
