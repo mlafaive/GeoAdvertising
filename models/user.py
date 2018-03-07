@@ -27,5 +27,4 @@ class User(db.Model):
           'name': self.name,
           'password': self.password,
           'last_offer_time': self.last_offer_time,
-          'businesses': [b.id for b in self.businesses],
        }
