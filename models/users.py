@@ -6,7 +6,7 @@ class Users(db.Model):
     user_type = db.Column(db.String(10), nullable=False)
     email_address = db.Column(db.String(50), nullable=False, unique=True)
     phone_number = db.Column(db.String(11), nullable=False)
-    password = db.Column(db.String(), nullable=False)
+    password = db.Column(db.String, nullable=False)
     dob = db.Column(db.Date, nullable=True)
     last_offer_time = db.Column(db.Date, nullable=True)
 
