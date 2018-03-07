@@ -13,20 +13,24 @@ class Business(db.Model):
     # Direct access to corresponding city(city) using Business.city
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
 
-    def __init__(self, name, store_address, city_id, manager_address, latitude, longitude):
+
+    offers = db.relationship('Offer', backref='business', lazy=True)
+
+    def __init__(self, name, store_address, city_id, manager_address, latitude, longitude, offers=[]):
         self.name = name
         self.store_address = store_address
         self.city_id = city_id
         self.manager_address = manager_address
         self.latitude = latitude
         self.longitude = longitude
+        self.offers = offers
 
         
 
 
     def __repr__(self):
-        return "<name='%s', store_address='%s', city_id=%d, manager_address='%s', latitude=%f, longitude=%f>" \
-                % (self.name, self.store_address, self.city_id, self.manager_address, self.latitude, self.longitude)
+        return "<name='%s', store_address='%s', city_id=%d, manager_address='%s', latitude=%f, longitude=%f, offers=%r>" \
+                % (self.name, self.store_address, self.city_id, self.manager_address, self.latitude, self.longitude, [o.id for o in self.offers])
 
     @property
     def serialize(self):
@@ -38,6 +42,7 @@ class Business(db.Model):
            'city_id': self.city_id,
            'manager_address': self.manager_address,
            'latitude': self.latitude,
-           'longitude': self.longitude
+           'longitude': self.longitude,
+           'offers': [o.id for o in self.offers]
        }
 
