@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import Users, Businesses, Interests, User_Interests, Offers, Cities, Business_Offers
+from models import User, Business, Interest, User_Interest, Offer, City, Business_Offer, Offer_Interest
 import config
 import datetime
 
@@ -38,20 +38,21 @@ if __name__ == '__main__':
 		# name, user_type, email_address, phone_number, dob, password, salt, last_offer_time
 		user1 = Users('Jack Smith', 'consumer', 'jacksmith@gmail.com', 'password1')
 		user2 = Users('Jane Doe', 'manager', 'janedoe@gmail.com', 'password2')
+
 		db.session.add(user1)
 		db.session.add(user2)
 
-		cit1 = Cities('Ann Arbor', 'Michigan', 'EST')
+		cit1 = City('Ann Arbor', 'Michigan', 'EST')
 		db.session.add(cit1)
 
 		#                  name,    business_type, store_address,          city_id, email_address,    phone_number, latitude,   longitude, manager_id,  unit_number=None
-		bis1 = Businesses('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 1)
+		bis1 = Business('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 1)
 		db.session.add(bis1)
 
-		its1 = Interests('Sporting Goods')
+		its1 = Interest('Sporting Goods')
 		db.session.add(its1)
 
-		uist1 = User_Interests(1,1)
+		uist1 = User_Interest(1,1)
 		db.session.add(uist1)
 
 
@@ -59,10 +60,15 @@ if __name__ == '__main__':
 		db.session.commit()
 
 
-		off1 = Offers(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'Greatest Offer EVER!!! CASH CASH CASH', 'This is the description of the greatest offer og all time.')
+		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'Greatest Offer EVER!!! CASH CASH CASH', 'This is the description of the greatest offer og all time.')
 		db.session.add(off1)
 
-		bisoff1 = Business_Offers(1,1)
+		offint1 = Offer_Interest(1,1)
+		db.session.add(offint1)
+
+		bisoff1 = Business_Offer(1,1)
 		db.session.add(bisoff1)
+
+
 
 		db.session.commit()

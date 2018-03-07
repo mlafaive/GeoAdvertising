@@ -1,6 +1,6 @@
 from extensions import db
 
-class Offers(db.Model):
+class Offer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     business_id = db.Column(db.Integer, nullable=False)
     start_time = db.Column(db.DateTime, nullable=False)

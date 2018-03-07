@@ -7,7 +7,7 @@ class Users(db.Model):
     password = db.Column(db.String, nullable=False)
     last_offer_time = db.Column(db.Date, nullable=True)
 
-    def __init__(self, name, user_type, email_address, password, dob=None, last_offer_time=None):
+    def __init__(self, name, user_type, email_address, password, last_offer_time=None):
         self.name = name
         self.user_type = user_type
         self.email_address = email_address

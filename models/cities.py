@@ -1,6 +1,6 @@
 from extensions import db
 
-class Cities(db.Model):
+class City(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     city_name = db.Column(db.String(50), nullable=False)
     state_name = db.Column(db.String(50), nullable=False)
