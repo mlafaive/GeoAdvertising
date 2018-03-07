@@ -6,7 +6,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String, nullable=False)
     last_offer_time = db.Column(db.DateTime, nullable=True)
-    businesses = db.relationship('Business', backref='user', lazy=True)
+    businesses = db.relationship('Business', backref='manager', lazy=True)
 
     def __init__(self, email_address, name, password, businesses=[], last_offer_time=datetime.datetime(2000,1,1, 0,0,0)):
         self.email_address = email_address

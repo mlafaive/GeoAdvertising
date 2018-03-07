@@ -5,24 +5,25 @@ class Business(db.Model):
     name = db.Column(db.String(50), nullable=False)
     store_address = db.Column(db.String(50), nullable=False)
     city_id = db.Column(db.Integer, nullable=False)
-    manager_address = db.Column(db.String(50), db.ForeignKey('user.email_address'), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+    manager_address = db.Column(db.String(50), db.ForeignKey('user.email_address'), nullable=False)
     
 
-    def __init__(self, name, store_address, city_id, manager_address, latitude, longitude):
+    def __init__(self, name, store_address, city_id, manager, latitude, longitude):
         self.name = name
         self.store_address = store_address
         self.city_id = city_id
-        self.manager_address = manager_address
+        self.manager = manager
         self.latitude = latitude
         self.longitude = longitude
+
         
 
 
     def __repr__(self):
-        return "<name='%s', store_address='%s', city_id=%d, manager_address=%d, latitude=%f, longitude=%f>" \
-                % (self.name, self.store_address, self.city_id, self.manager_address, self.latitude, self.longitude)
+        return "<name='%s', store_address='%s', city_id=%d, manager_address='%s', latitude=%f, longitude=%f>" \
+                % (self.name, self.store_address, self.city_id, self.manager.email_address, self.latitude, self.longitude)
 
     @property
     def serialize(self):
@@ -32,7 +33,7 @@ class Business(db.Model):
            'name': self.name,
            'store_address': self.store_address,
            'city_id': self.city_id,
-           'manager_address': self.manager_address,
+           'manager_address': self.manager.email_address,
            'latitude': self.latitude,
            'longitude': self.longitude
        }
