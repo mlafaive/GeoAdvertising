@@ -46,7 +46,7 @@ if __name__ == '__main__':
 		db.session.add(cit1)
 
 		#                  name,    business_type, store_address,          city_id, email_address,    phone_number, latitude,   longitude, manager_id,  unit_number=None
-		bis1 = Business('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 1)
+		bis1 = Business('Google', 'Technology', '1600 Ampitheatre Parkway', 1, 'google@gmail.com', '12345678901', 37.421512, -122.084101, 'jacksmith@gmail.com')
 		db.session.add(bis1)
 
 		its1 = Interest('Sporting Goods')

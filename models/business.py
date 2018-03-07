@@ -11,9 +11,9 @@ class Business(db.Model):
     phone_number = db.Column(db.String(11), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    #manager_id = db.Column(db.Integer, db.ForeignKey('user.email_address'), nullable=False)
+    manager_address = db.Column(db.String(50), db.ForeignKey('user.email_address'), nullable=False)
 
-    def __init__(self, name, business_type, store_address, city_id, email_address, phone_number, latitude, longitude, manager_id,  unit_number=None):
+    def __init__(self, name, business_type, store_address, city_id, email_address, phone_number, latitude, longitude, manager_address,  unit_number=None):
         self.name = name
         self.business_type = business_type
         self.store_address = store_address
@@ -22,13 +22,13 @@ class Business(db.Model):
         self.phone_number = phone_number
         self.latitude = latitude
         self.longitude = longitude
-        self.manager_id = manager_id
+        self.manager_address = manager_address
         self.unit_number = unit_number
 
 
     def __repr__(self):
-        return "<name='%s', business_type='%s', store_address='%s', unit_number='%s', city_id=%d, email_address='%s', phone_number='%s', manager_id=%d, latitude=%f, longitude=%f>" \
-                % (self.name, self.business_type, self.store_address, self.unit_number, self.city_id, self.email_address, self.phone_number, self.manager_id, self.latitude, self.longitude)
+        return "<name='%s', business_type='%s', store_address='%s', unit_number='%s', city_id=%d, email_address='%s', phone_number='%s', manager_address=%d, latitude=%f, longitude=%f>" \
+                % (self.name, self.business_type, self.store_address, self.unit_number, self.city_id, self.email_address, self.phone_number, self.manager_address, self.latitude, self.longitude)
 
     @property
     def serialize(self):
@@ -42,7 +42,7 @@ class Business(db.Model):
            'city_id': self.city_id,
            'email_address': self.email_address,
            'phone_number': self.phone_number,
-           'manager_id': self.manager_id,
+           'manager_address': self.manager_address,
            'latitude': self.latitude,
            'longitude': self.longitude
        }
