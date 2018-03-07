@@ -40,7 +40,7 @@ class Business(db.Model):
            'name': self.name,
            'store_address': self.store_address,
            'city_id': self.city_id,
-           'manager_address': self.manager_address,
+           'manager': self.manager.serialize,
            'latitude': self.latitude,
            'longitude': self.longitude,
            'offers': [o.id for o in self.offers]

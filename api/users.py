@@ -14,7 +14,7 @@ users_api = Blueprint("users_api", __name__)
 def users():
     if request.method == "GET":
         resp = jsonify({
-            "users": [i.serialize for i in Users.query.all()]
+            "users": [i.serialize for i in User.query.all()]
         })
         resp.status_code = 200
         return resp
@@ -27,7 +27,7 @@ def users():
             req = request.get_json()
 
             # Check if account exists (e-mails are unique)
-            exists = db.session.query(Users.email).get(req["email_address"]).scalar() is not None
+            exists = db.session.query(User.email).get(req["email_address"]).scalar() is not None
             if exists:
                 raise ValueError('An account with this email already exists.')
 
@@ -50,7 +50,7 @@ def create_user(req):
     req["password"] = sha256_crypt.hash(req["password"])
 
     # Add the user to SQLAlchemy
-    new_user = Users(**req)
+    new_user = User(**req)
     db.session.add(new_user)
     db.session.commit()
 
@@ -61,7 +61,7 @@ def create_user(req):
 @users_api.route('/api/users/<string:email>/', methods=['GET', 'PATCH', 'DELETE'])
 def user(email):
     # Return an error if the user does not exist
-    user = Users.query.get(email)
+    user = User.query.get(email)
     if user is None:
         resp = jsonify({"msg": "User not found."})
         resp.status_code = 404
@@ -139,3 +139,17 @@ def user(email):
         resp = jsonify(user.serialize)
         resp.status_code = 400
         return resp
+
+@users_api.route('/api/users/<string:email>/businesses/', methods=['GET'])
+def user_businesses(email):
+    user = User.query.get(email)
+    if user is None:
+        resp = jsonify({"msg": "User not found."})
+        resp.status_code = 404
+        return resp
+
+    resp = jsonify({
+            "businesses": [b.serialize for b in user.businesses]
+        })
+    resp.status_code = 200
+    return resp
