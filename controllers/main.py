@@ -1,6 +1,6 @@
 from flask import *
 import flask
-from models import Users, Businesses, Interests, User_Interests, Offers, Cities, Business_Offers
+from models import Users, Businesses, Interests, User_Interests, Offers, Cities, Business_Offers, Offer_Interests
 
 import werkzeug.exceptions as ex
 
@@ -16,8 +16,9 @@ def main_hello():
     all_offers = [i.serialize for i in Offers.query.all()]
     all_cities = [i.serialize for i in Cities.query.all()]
     all_bisoffs = [i.serialize for i in Business_Offers.query.all()]
+    all_offints = [i.serialize for i in Offer_Interests.query.all()]
 
-    resp = jsonify(all_users+all_businesses+all_interests+all_user_interests+all_offers+all_cities+all_bisoffs)
+    resp = jsonify(all_users+all_businesses+all_interests+all_user_interests+all_offers+all_cities+all_bisoffs+all_offints)
     resp.status_code = 200
 
     return resp
