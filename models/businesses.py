@@ -1,6 +1,6 @@
 from extensions import db
 
-class Businesses(db.Model):
+class Business(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     business_type = db.Column(db.String(50), nullable=False)

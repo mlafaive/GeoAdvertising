@@ -1,6 +1,6 @@
 from extensions import db
 
-class Business_Offers(db.Model):
+class Business_Offer(db.Model):
     business_id = db.Column(db.Integer, primary_key=True)
     offer_id = db.Column(db.Integer, primary_key=True)
 

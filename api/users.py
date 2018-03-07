@@ -2,7 +2,7 @@ import json
 from pprint import pprint
 import flask
 from flask import *
-from models import Users
+from models import User
 from extensions import db
 from passlib.hash import sha256_crypt
 

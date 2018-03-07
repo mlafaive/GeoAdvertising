@@ -1,6 +1,6 @@
 from extensions import db
 
-class User_Interests(db.Model):
+class User_Interest(db.Model):
     user_id = db.Column(db.Integer, primary_key=True)
     interest_id = db.Column(db.Integer, primary_key=True)
 
