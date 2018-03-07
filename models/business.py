@@ -11,7 +11,7 @@ class Business(db.Model):
     phone_number = db.Column(db.String(11), nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
-    manager_id = db.Column(db.Integer, nullable=False)
+    #manager_id = db.Column(db.Integer, db.ForeignKey('user.email_address'), nullable=False)
 
     def __init__(self, name, business_type, store_address, city_id, email_address, phone_number, latitude, longitude, manager_id,  unit_number=None):
         self.name = name
