@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import User, Business, Interest, User_Interest, Offer, City, Business_Offer, Offer_Interest
+from models import User, Business, Interest, User_Interest, Offer, City, Offer_Interest
 import config
 import datetime
 
@@ -66,8 +66,6 @@ if __name__ == '__main__':
 		offint1 = Offer_Interest(1,1)
 		db.session.add(offint1)
 
-		bisoff1 = Business_Offer(1,1)
-		db.session.add(bisoff1)
 
 
 
