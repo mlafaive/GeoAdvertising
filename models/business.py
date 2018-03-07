@@ -4,11 +4,14 @@ class Business(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     name = db.Column(db.String(50), nullable=False)
     store_address = db.Column(db.String(50), nullable=False)
-    city_id = db.Column(db.Integer, nullable=False)
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
+
+    # Direct access to corresponding manager(user) using Business.manager
     manager_address = db.Column(db.String(50), db.ForeignKey('user.email_address'), nullable=False)
-    
+
+    # Direct access to corresponding city(city) using Business.city
+    city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
 
     def __init__(self, name, store_address, city_id, manager_address, latitude, longitude):
         self.name = name
@@ -33,7 +36,7 @@ class Business(db.Model):
            'name': self.name,
            'store_address': self.store_address,
            'city_id': self.city_id,
-           'manager_address': self.manager_address,
+           'manager': self.manager.serialize,
            'latitude': self.latitude,
            'longitude': self.longitude
        }

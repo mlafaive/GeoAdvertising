@@ -15,6 +15,7 @@ app = Flask(__name__)
 app.register_blueprint(main)
 app.register_blueprint(users_api)
 app.register_blueprint(offers_api)
+app.register_blueprint(businesses_api)
 
 @app.errorhandler(404)
 def page_not_found(error=None):
