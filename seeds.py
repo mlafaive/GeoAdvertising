@@ -36,8 +36,8 @@ if __name__ == '__main__':
 			
 		
 		# name, user_type, email_address, phone_number, dob, password, salt, last_offer_time
-		user1 = User('Jack Smith', 'consumer', 'jacksmith@gmail.com', 'password1')
-		user2 = User('Jane Doe', 'manager', 'janedoe@gmail.com', 'password2')
+		user1 = User('jacksmith@gmail.com', 'Jack Smith', 'password1')
+		user2 = User('janedoe@gmail.com', 'Jane Doe', 'password2')
 
 		db.session.add(user1)
 		db.session.add(user2)
