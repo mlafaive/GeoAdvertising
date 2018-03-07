@@ -5,34 +5,46 @@ from flask import *
 from models import Users
 from extensions import db
 from passlib.hash import sha256_crypt
+import base64
+import re
 
 users_api = Blueprint("users_api", __name__)
 
 @users_api.route('/api/users/', methods=['GET', 'POST'])
 def users():
     if request.method == "GET":
-        resp = {
+        resp = jsonify({
             "users": [i.serialize for i in Users.query.all()]
-        }
-        return flask.jsonify(resp)
+        })
+        resp.status_code = 200
+        return resp
     if request.method == "POST":
         try:
             # Get JSON from the request
-            req = flask.request.get_json()
+
+            # TODO validate request
+
+            req = request.get_json()
 
             # Check if account exists (e-mails are unique)
-            exists = db.session.query(Users.id).filter_by(email_address = req["email_address"]).scalar()
+            exists = db.session.query(Users.email).get(req["email_address"]).scalar() is not None
             if exists:
                 raise ValueError('An account with this email already exists.')
 
             # Create the user in the database
             return create_user(req)
         except (TypeError, ValueError) as e:
-            return flask.jsonify({"status": 400, "msg": str(e)})
+            resp = jsonify({"msg": str(e)})
+            resp.status_code = 400
+            return resp
 
 def create_user(req):
     if req is None:
-        return flask.jsonify({"status": 400, "msg": "invalid request"})
+        resp = jsonify({"msg": "invalid request"})
+        resp.status_code = 400
+        return resp
+
+    # TODO validate request
 
     # Hash the password and overwrite
     req["password"] = sha256_crypt.hash(req["password"])
@@ -42,48 +54,88 @@ def create_user(req):
     db.session.add(new_user)
     db.session.commit()
 
-    return flask.jsonify(req, 201)
+    resp = jsonify(new_user.serialize)
+    resp.status_code = 201
+    return resp
 
 @users_api.route('/api/users/<string:email>/', methods=['GET', 'PATCH', 'DELETE'])
 def user(email):
     # Return an error if the user does not exist
-    user = Users.query.filter_by(email_address = email).first()
+    user = Users.query.get(email)
     if user is None:
-        return flask.jsonify({
-            "status": 400,
-            "msg": "An account with this email does not exist."
-        })
+        resp = jsonify({"msg": "User not found."})
+        resp.status_code = 404
+        return resp
+
+    # authenticate
+    if 'Authorization' not in request.headers:
+        resp = jsonify({"msg": "Unautheticated request"})
+        resp.status_code = 403
+        return resp
+
+    parts = []
+    email = ''
+    password = ''
+    try:
+        parts = base64.b64decode(request.headers['Authorization'].split()[1].encode()).decode().split(':')
+
+        email = parts[0]
+        password = parts[1]
+
+    except (TypeError, IndexError) as e:
+        resp = jsonify({"msg": str(e)})
+        resp.status_code = 403
+        return resp
+
+    if email != user.email_address or not sha256_crypt.verify(password, user.password):
+        resp = jsonify({"msg": "Unautheticated request"})
+        resp.status_code = 403
+        return resp
 
     if request.method == 'GET':
-        return flask.jsonify(user.serialize)
+        resp = jsonify(user.serialize)
+        resp.status_code = 200
+        return resp
     if request.method == 'DELETE':
         db.session.delete(user)
         db.session.commit()
-        return ('', 204)
+
+        resp = jsonify({})
+        resp.status_code = 204
+        return resp
+
     if request.method == 'PATCH':
         # Get the request data
-        req = flask.request.get_json()
+        req = request.get_json()
 
         # Create a list of valid update keys
-        valid = ["name", "phone_numer", "password", "dob"]
+        valid = ["name", "password"]
 
         # Error out if any requested keys are not valid
         for key in req.keys():
             if key not in valid:
-                return flask.jsonify({"status": 400, "msg": "patch request invalid"})
+                return jsonify({"status": 400, "msg": "patch request invalid"})
 
         # Update valid fields
         if 'name' in req:
+            if len(req["name"]) > 50 or not re.match("^[A-Za-z ]*$", req["name"]):
+                resp = jsonify({"msg": "Invalid name"})
+                resp.status_code = 400
+                return resp
             user.name = req["name"]
-        if 'phone_number' in req:
-            user.phone_number = req["phone_number"]
+
+
         if 'password' in req:
+            if not re.match("^[A-Za-z0-9!$@&]*$", req["password"]):
+                resp = jsonify({"msg": "Invalid password"})
+                resp.status_code = 400
+                return resp
             user.password = sha256_crypt.hash(req["password"])
-        if 'dob' in req:
-            user.dob = req["dob"]
 
         # commit
         db.session.commit()
 
         # return the new user data
-        return flask.jsonify(user.serialize)
+        resp = jsonify(user.serialize)
+        resp.status_code = 400
+        return resp
