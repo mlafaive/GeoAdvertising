@@ -58,7 +58,7 @@ if __name__ == '__main__':
 		db.session.commit()
 
 
-		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'Greatest Offer EVER!!! CASH CASH CASH', 'This is the description of the greatest offer og all time.')
+		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'This is the description of the greatest offer og all time.')
 		db.session.add(off1)
 
 		off1.interests.append(its1)
