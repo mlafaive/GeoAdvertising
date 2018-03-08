@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import User, Business, Interest, User_Interest, Offer, City, Offer_Interest
+from models import User, Business, Interest, Offer, City, Offer_Interest
 import config
 import datetime
 
@@ -51,9 +51,7 @@ if __name__ == '__main__':
 
 		its1 = Interest('Sporting Goods')
 		db.session.add(its1)
-
-		uist1 = User_Interest(1,1)
-		db.session.add(uist1)
+		user1.interests.append(its1)
 
 
 
