@@ -75,7 +75,7 @@ def business(id):
         return resp
 
 @business_api.route('/api/businesses/<int:id>/offers/', methods=['GET'])
-def business_offers(email):
+def business_offers(id):
     business = Business.query.get(id)
     if business is None:
         resp = jsonify({"msg": "User not found."})
