@@ -2,7 +2,7 @@ from extensions import *
 from flask import *
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from models import User, Business, Interest, Offer, City, Offer_Interest
+from models import User, Business, Interest, Offer, City
 import config
 import datetime
 
@@ -61,8 +61,7 @@ if __name__ == '__main__':
 		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'Greatest Offer EVER!!! CASH CASH CASH', 'This is the description of the greatest offer og all time.')
 		db.session.add(off1)
 
-		offint1 = Offer_Interest(1,1)
-		db.session.add(offint1)
+		off1.interests.append(its1)
 
 
 

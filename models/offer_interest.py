@@ -1,22 +1,7 @@
 from extensions import db
 
-class Offer_Interest(db.Model):
-    offer_id = db.Column(db.Integer, primary_key=True)
-    interest_id = db.Column(db.Integer, primary_key=True)
 
-    def __init__(self, offer_id, interest_id):
-        self.offer_id = offer_id
-        self.interest_id = interest_id
-
-
-    def __repr__(self):
-        return "<offer_id=%d, interest_id=%d>" % \
-              (self.offer_id, self.interest_id)
-
-    @property
-    def serialize(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'offer_id': self.offer_id,
-           'interest_id': self.interest_id,
-       }
+offer_interest = db.Table('offer_interest',
+                          db.Column('offer_id', db.Integer, db.ForeignKey('offer.id'), primary_key=True),
+                          db.Column('interest_id', db.Integer, db.ForeignKey('interest.id'), primary_key=True)
+                        )

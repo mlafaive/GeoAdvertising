@@ -1,4 +1,5 @@
 from extensions import db
+from .offer_interest import offer_interest
 
 class Offer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -10,17 +11,20 @@ class Offer(db.Model):
     # Direct access to corresponding offer(offer) using Business
     business_id = db.Column(db.Integer, db.ForeignKey('business.id'), nullable=False)
 
-    def __init__(self, business_id, start_time, end_time, title, description):
+    interests = db.relationship('Interest', secondary=offer_interest, lazy='subquery', backref=db.backref('offers',lazy=True))
+
+    def __init__(self, business_id, start_time, end_time, title, description, interests=[]):
         self.business_id = business_id
         self.start_time = start_time
         self.end_time = end_time
         self.title = title
         self.description = description
+        self.interests = interests
 
 
     def __repr__(self):
-        return "<business_id=%d, start_time=%r, end_time=%r, title='%s', description='%s'>" % \
-        		(self.business_id, self.start_time, self.end_time, self.title, self.description)
+        return "<business_id=%d, start_time=%r, end_time=%r, title='%s', description='%s', interests=%r>" % \
+        		(self.business_id, self.start_time, self.end_time, self.title, self.description, [i.name for i in self.interests])
 
     @property
     def serialize(self):
@@ -32,5 +36,6 @@ class Offer(db.Model):
            'end_time': self.end_time,
            'title': self.title,
            'description': self.description,
+           'interests': [i.name for i in self.interests],
        }
 
