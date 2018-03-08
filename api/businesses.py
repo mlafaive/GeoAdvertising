@@ -73,3 +73,18 @@ def business(id):
         resp = jsonify({})
         resp.status_code = 204
         return resp
+
+@business_api.route('/api/businesses/<int:id>/offers/', methods=['GET'])
+def business_offers(email):
+    business = Business.query.get(id)
+    if business is None:
+        resp = jsonify({"msg": "User not found."})
+        resp.status_code = 404
+        return resp
+
+    resp = jsonify({
+            "offers": [o.serialize for o in business.offers]
+        })
+    resp.status_code = 200
+    return resp
+
