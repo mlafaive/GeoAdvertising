@@ -36,7 +36,7 @@ class UserCreate(Resource):
 
 class UserRefresh(Resource):
 	@jwt_refresh_token_required
-	def get(self):
+	def post(self):
 		return {
 			'access_token': create_access_token(identity = get_jwt_identity())
 		}
@@ -65,8 +65,6 @@ class UserLogin(Resource):
 			'access_token': create_access_token(identity = args["email"]),
 			'refresh_token': create_refresh_token(identity = args["email"])
 		}
-
-
 
 class UserDML(Resource):
 	@jwt_required

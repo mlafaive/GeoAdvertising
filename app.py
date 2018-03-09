@@ -28,20 +28,23 @@ app.register_blueprint(users_api)
 app.register_blueprint(offers_api)
 app.register_blueprint(businesses_api)
 
+# Register error handler on abort(404)
 @app.errorhandler(404)
 def page_not_found(error=None):
 	return not_found(error)
 
+# Flask App settings
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
 app.config['BUNDLE_ERRORS'] = True
 app.config['JWT_SECRET_KEY'] = b'\xbf\xe2r)\xa8A\xf1\xafa\xcc\xb6\x05i\xda\xf0v\x91\xc8\xd9p\xb8\xe3-\x9cs]\xb4^\x13\x8a\x8d\xdf'
 app.config['JWT_BLACKLIST_ENABLED'] = True
+app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
 # Initialize JWT
 jwt = flask_jwt_extended.JWTManager(app)
 
-
+# Initialize SQLAlchemy
 db.init_app(app)
 
 # Listen on external IPs
