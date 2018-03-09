@@ -1,15 +1,23 @@
 import flask
 from flask import *
+import flask_restful
 import controllers
 from controllers import *
 import api
 from api import *
+import endpoint
+from endpoint import *
 import config
 
 from extensions import *
 
-# Initialize Flask app
+# Initialize Flask and Flask_Restful apps
 app = Flask(__name__)
+api = flask_restful.Api(app)
+
+# Register Flask Restful resources
+api.add_resource(UserCreate, '/api/user')
+api.add_resource(UserDML, '/api/user/<string:_email>')
 
 # Register the controllers
 app.register_blueprint(main)
@@ -23,7 +31,7 @@ def page_not_found(error=None):
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
-
+app.config['BUNDLE_ERRORS'] = True
 
 
 db.init_app(app)
