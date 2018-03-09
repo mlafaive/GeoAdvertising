@@ -34,6 +34,14 @@ class UserCreate(Resource):
 
 		return args, 201
 
+class UserRefresh(Resource):
+	@jwt_refresh_token_required
+	def get(self):
+		return {
+			'access_token': create_access_token(identity = get_jwt_identity())
+		}
+
+
 class UserLogin(Resource):
 	def post(self):
 		# Specify a parser with expected arguments
@@ -56,7 +64,7 @@ class UserLogin(Resource):
 		return {
 			'access_token': create_access_token(identity = args["email"]),
 			'refresh_token': create_refresh_token(identity = args["email"])
-		}, 200
+		}
 
 
 
@@ -64,7 +72,6 @@ class UserDML(Resource):
 	@jwt_required
 	def get(self, _email):
 		# Ensure requested email and token identity are the same
-		# Otherwise error
 		if get_jwt_identity() != _email:
 			flask.abort(403)
 
@@ -79,6 +86,11 @@ class UserDML(Resource):
 
 	@jwt_required
 	def delete(self, _email):
+		# Ensure requested email and token identity are the same
+		if get_jwt_identity() != _email:
+			flask.abort(403)
+
+
 		# Check if user exists
 		if User.query.filter_by(email = _email).first() is None:
 		   return {'error': 'user does not exist'}, 400
@@ -94,6 +106,10 @@ class UserDML(Resource):
 	# TODO: Figure out how datetimes should be parsed
 	@jwt_required
 	def patch(self, _email):
+		# Ensure requested email and token identity are the same
+		if get_jwt_identity() != _email:
+			flask.abort(403)
+
 		# Check if user exists
 		if User.query.filter_by(email = _email).first() is None:
 		   return {'error': 'user does not exist'}, 400
