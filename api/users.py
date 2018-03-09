@@ -27,7 +27,7 @@ def users():
             req = request.get_json()
 
             # Check if account exists (e-mails are unique)
-            exists = db.session.query(User.email).get(req["email_address"]).scalar() is not None
+            exists = db.session.query(User.email).get(req["email"]).scalar() is not None
             if exists:
                 raise ValueError('An account with this email already exists.')
 
@@ -87,7 +87,7 @@ def user(email):
         resp.status_code = 403
         return resp
 
-    if email != user.email_address or not sha256_crypt.verify(password, user.password):
+    if email != user.email or not sha256_crypt.verify(password, user.password):
         resp = jsonify({"msg": "Unautheticated request"})
         resp.status_code = 403
         return resp

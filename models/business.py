@@ -8,7 +8,7 @@ class Business(db.Model):
     longitude = db.Column(db.Float, nullable=False)
 
     # Direct access to corresponding manager(user) using Business.manager
-    manager_address = db.Column(db.String(50), db.ForeignKey('user.email_address'), nullable=False)
+    manager_address = db.Column(db.String(50), db.ForeignKey('user.email'), nullable=False)
 
     # Direct access to corresponding city(city) using Business.city
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)

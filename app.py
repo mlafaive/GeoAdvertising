@@ -1,6 +1,7 @@
 import flask
 from flask import *
 import flask_restful
+import flask_jwt_extended
 import controllers
 from controllers import *
 import api
@@ -17,6 +18,7 @@ api = flask_restful.Api(app)
 
 # Register Flask Restful resources
 api.add_resource(UserCreate, '/api/user')
+api.add_resource(UserLogin, '/api/user/login')
 api.add_resource(UserDML, '/api/user/<string:_email>')
 
 # Register the controllers
@@ -32,6 +34,10 @@ def page_not_found(error=None):
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
 app.config['BUNDLE_ERRORS'] = True
+app.config['JWT_SECRET_KEY'] = b'\xbf\xe2r)\xa8A\xf1\xafa\xcc\xb6\x05i\xda\xf0v\x91\xc8\xd9p\xb8\xe3-\x9cs]\xb4^\x13\x8a\x8d\xdf'
+
+# Initialize JWT
+jwt = flask_jwt_extended.JWTManager(app)
 
 
 db.init_app(app)

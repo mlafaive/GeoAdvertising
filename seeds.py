@@ -35,7 +35,7 @@ if __name__ == '__main__':
 			print('To reset ids run reset from heroku account')
 			
 		
-		# name, user_type, email_address, phone_number, dob, password, salt, last_offer_time
+		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
 		user1 = User('jacksmith@gmail.com', 'Jack Smith', 'password1')
 		user2 = User('janedoe@gmail.com', 'Jane Doe', 'password2')
 
@@ -45,7 +45,7 @@ if __name__ == '__main__':
 		cit1 = City('Ann Arbor', 'Michigan', 'EST')
 		db.session.add(cit1)
 
-		#                  name,    business_type, store_address,          city_id, email_address,    phone_number, latitude,   longitude, manager_id,  unit_number=None
+		#                  name,    business_type, store_address,          city_id, email,    phone_number, latitude,   longitude, manager_id,  unit_number=None
 		bis1 = Business('Google', '1600 Ampitheatre Parkway', 1, 'jacksmith@gmail.com', 37.421512, -122.084101)
 		db.session.add(bis1)
 
