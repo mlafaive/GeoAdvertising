@@ -4,6 +4,7 @@ from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_r
 from extensions import db
 from models import Business, City
 import geopy
+from tzwhere import tzwhere
 
 
 class BusinessCreate(Resource):
@@ -23,10 +24,13 @@ class BusinessCreate(Resource):
         manager = get_jwt_identity()
         args["manager"] = manager
 
-        # Get the geolocation and timezone of the store using its address, city, and state
-        geo = geopy.geocoders.GoogleV3()
+        # Get the geolocation of the store using its address, city, and state
+        geo = geopy.geocoders.Nominatim()
         location = geo.geocode('{}, {}, {}'.format(args["store_address"], args["city_name"], args["state_name"]))
-        timezone = geo.timezone((location.latitude, location.longitude))
+
+        # Get the timzone of the store using its latitude and longitude
+        tz = tzwhere.tzwhere()
+        timezone = tz.tzNameAt(location.latitude, location.longitude)
 
         # Fetch the City or create if it doesn't exist
         city = City.query.filter_by(city_name = args["city_name"], state_name = args["state_name"]).first()
