@@ -16,8 +16,12 @@ class UserCreate(Resource):
 		parser.add_argument('password', type=str, required=True, help='password is required')
 		args = parser.parse_args()
 
+
+		# Retrieve User with _email from DB
+		user = User.query.get(args["email"])
+
 		# Check if user already exists
-		if User.query.filter_by(email = args["email"]).first() is not None:
+		if user is not None:
 		   return {'error': 'user already exists'}, 409
 
 
@@ -48,7 +52,7 @@ class UserLogin(Resource):
 		args = parser.parse_args()
 
 		# Retrieve the user
-		user = User.query.filter_by(email = args["email"]).first()
+		user = User.query.get(args["email"])
 
 		# If user does not exist return an error
 		if user is None:
@@ -70,12 +74,15 @@ class UserDML(Resource):
 		if get_jwt_identity() != _email:
 			flask.abort(403)
 
-		# Check if user exists
-		if User.query.filter_by(email = _email).first() is None:
-		   return {'error': 'user does not exist'}, 400
 
 		# Retrieve User with _email from DB
-		user = User.query.filter_by(email = _email).first()
+		user = User.query.get(_email)
+
+		# Check if user exists
+		if user is None:
+		   return {'error': 'user does not exist'}, 400
+
+
 		print(user)
 		return user.serialize, 200
 
@@ -85,13 +92,14 @@ class UserDML(Resource):
 		if get_jwt_identity() != _email:
 			flask.abort(403)
 
+		# Retrieve User with _email from DB
+		user = User.query.get(_email)
 
 		# Check if user exists
-		if User.query.filter_by(email = _email).first() is None:
+		if user is None:
 		   return {'error': 'user does not exist'}, 400
 
-		# Retrieve User with _email
-		user = User.query.filter_by(email = _email).first()
+		
 		# Remove user from DB
 		db.session.delete(user)
 		db.session.commit()
@@ -105,9 +113,15 @@ class UserDML(Resource):
 		if get_jwt_identity() != _email:
 			flask.abort(403)
 
+
+		# Retrieve User with _email from DB
+		user = User.query.get(_email)
+
 		# Check if user exists
-		if User.query.filter_by(email = _email).first() is None:
+		if user is None:
 		   return {'error': 'user does not exist'}, 400
+
+
 
 		# Speicfy a parser with expected arguments
 		parser = reqparse.RequestParser()
@@ -117,9 +131,6 @@ class UserDML(Resource):
 		parser.add_argument('businesses', type=list)
 		parser.add_argument('interests', type=list)
 		args = parser.parse_args()
-
-		# Retrieve User with _email
-		user = User.query.filter_by(email = _email).first()
 
 		# Encrypt password if it was posted
 		if args['password'] is not None:
