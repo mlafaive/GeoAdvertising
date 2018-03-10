@@ -1,14 +1,11 @@
-from flask_restful import Resource, reqparse, HTTPException
-from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity, get_raw_jwt)
-from extensions import db
 import flask
+from flask_restful import Resource, reqparse, HTTPException
+from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
+from extensions import db
 from models import User
 from passlib.hash import sha256_crypt
 
 # TODO: Parse Input // handle the errors properly
-
-class UserAlreadyExistsError(HTTPException):
-	pass
 
 class UserCreate(Resource):
 	def post(self):

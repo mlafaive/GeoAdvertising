@@ -87,4 +87,3 @@ def business_offers(id):
         })
     resp.status_code = 200
     return resp
-

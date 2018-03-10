@@ -25,8 +25,6 @@ class Business(db.Model):
         self.longitude = longitude
         self.offers = offers
 
-        
-
 
     def __repr__(self):
         return "<name='%s', store_address='%s', city_id=%d, manager_address='%s', latitude=%f, longitude=%f, offers=%r>" \
@@ -45,4 +43,3 @@ class Business(db.Model):
            'longitude': self.longitude,
            'offers': [o.id for o in self.offers]
        }
-

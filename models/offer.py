@@ -30,9 +30,8 @@ class Offer(db.Model):
        return {
            'id': self.id,
            'business_id': self.business_id,
-           'start_time': self.start_time,
-           'end_time': self.end_time,
+           'start_time': self.start_time.isoformat(),
+           'end_time': self.end_time.isoformat(),
            'description': self.description,
            'interests': [i.name for i in self.interests],
        }
-

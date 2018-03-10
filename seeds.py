@@ -33,8 +33,8 @@ if __name__ == '__main__':
 
 			User.query.delete()
 			print('To reset ids run reset from heroku account')
-			
-		
+
+
 		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
 		user1 = User('jacksmith@gmail.com', 'Jack Smith', 'password1')
 		user2 = User('janedoe@gmail.com', 'Jane Doe', 'password2')

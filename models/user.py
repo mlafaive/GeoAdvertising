@@ -28,7 +28,6 @@ class User(db.Model):
        return {
           'email': self.email,
           'name': self.name,
-          'password': self.password,
           'last_offer_time': self.last_offer_time.isoformat(),
           'businesses': [b.id for b in self.businesses],
           'interests': [i.name for i in self.interests],

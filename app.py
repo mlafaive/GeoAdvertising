@@ -21,6 +21,9 @@ api.add_resource(UserCreate, '/api/user')
 api.add_resource(UserLogin, '/api/user/login')
 api.add_resource(UserRefresh, '/api/user/refresh')
 api.add_resource(UserDML, '/api/user/<string:_email>')
+api.add_resource(BusinessCreate, '/api/business')
+api.add_resource(BusinessDML, '/api/business/<int:_id>')
+api.add_resource(BusinessOffers, '/api/business/<int:_id>/offers')
 
 # Register the controllers
 app.register_blueprint(main)
@@ -38,8 +41,6 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = get_db_url()
 app.config['BUNDLE_ERRORS'] = True
 app.config['JWT_SECRET_KEY'] = b'\xbf\xe2r)\xa8A\xf1\xafa\xcc\xb6\x05i\xda\xf0v\x91\xc8\xd9p\xb8\xe3-\x9cs]\xb4^\x13\x8a\x8d\xdf'
-app.config['JWT_BLACKLIST_ENABLED'] = True
-app.config['JWT_BLACKLIST_TOKEN_CHECKS'] = ['access', 'refresh']
 
 # Initialize JWT
 jwt = flask_jwt_extended.JWTManager(app)
