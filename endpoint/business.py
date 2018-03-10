@@ -59,7 +59,7 @@ class BusinessDML(Resource):
     @jwt_required
     def get(self, _id):
         # Ensure the business exists
-        business = Business.query.filter_by(id = _id).first()
+        business = Business.query.get(_id)
         if business is None:
             return {'error': 'business does not exist'}, 400
 
@@ -69,7 +69,7 @@ class BusinessDML(Resource):
     @jwt_required
     def delete(self, _id):
         # Ensure the business exists
-        business = Business.query.filter_by(id = _id).first()
+        business = Business.query.get(_id)
         if business is None:
             return {'error': 'business does not exist'}, 400
 
@@ -89,7 +89,7 @@ class BusinessOffers(Resource):
     @jwt_required
     def get(self, _id):
         # Ensure the business exists
-        business = Business.query.filter_by(id = _id).first()
+        business = Business.query.get(_id)
         if business is None:
             return {'error': 'business does not exist'}, 400
 
