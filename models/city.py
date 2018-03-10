@@ -28,3 +28,13 @@ class City(db.Model):
            'timezone': self.timezone,
            'businesses': [b.id for b in self.businesses],
        }
+
+
+    @property
+    def get_public_data(self):
+       """Return object data in easily serializeable format"""
+       return {
+           'city_name': self.city_name,
+           'state_name': self.state_name,
+           'timezone': self.timezone,
+       }
