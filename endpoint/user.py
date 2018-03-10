@@ -99,7 +99,7 @@ class UserDML(Resource):
 		if user is None:
 		   return {'error': 'user does not exist'}, 400
 
-		
+
 		# Remove user from DB
 		db.session.delete(user)
 		db.session.commit()

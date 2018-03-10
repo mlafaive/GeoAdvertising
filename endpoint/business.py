@@ -22,20 +22,22 @@ class BusinessCreate(Resource):
 
         # Set manager to the token's identity, and add to args
         manager = get_jwt_identity()
+
         args["manager"] = manager
 
         # Get the geolocation of the store using its address, city, and state
-        geo = geopy.geocoders.Nominatim()
+        geo = geopy.geocoders.GoogleV3(api_key='AIzaSyD56wh0KThJ-ekY1WBICUzt_wEX6MtEH7c')
         location = geo.geocode('{}, {}, {}'.format(args["store_address"], args["city_name"], args["state_name"]))
+        city_name = location.address.split(",")[0]
+        state_name = location.address.split(",")[1]
 
         # Get the timzone of the store using its latitude and longitude
-        tz = tzwhere.tzwhere()
-        timezone = tz.tzNameAt(location.latitude, location.longitude)
+        timezone = geo.timezone((location.latitude, location.longitude))
 
         # Fetch the City or create if it doesn't exist
-        city = City.query.filter_by(city_name = args["city_name"], state_name = args["state_name"]).first()
+        city = City.query.filter_by(city_name = city_name, state_name = state_name).first()
         if city is None:
-            city = City(city_name = args["city_name"], state_name = args["state_name"], timezone = timezone.zone)
+            city = City(city_name = city_name, state_name = state_name, timezone = timezone.zone)
             db.session.add(city)
             db.session.flush()
             # ^ Does SA update the city here???
