@@ -2,8 +2,9 @@ import flask
 from flask_restful import Resource, reqparse, HTTPException
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
 from extensions import db
-from models import User
+from models import User, Interest
 from passlib.hash import sha256_crypt
+from datetime import datetime
 
 # TODO: Parse Input // handle the errors properly
 
@@ -86,7 +87,6 @@ class UserDML(Resource):
 		   return {'error': 'user does not exist'}, 400
 
 
-		print(user)
 		return user.serialize, 200
 
 	@jwt_required
@@ -131,7 +131,6 @@ class UserDML(Resource):
 		parser.add_argument('name', type=str)
 		parser.add_argument('password', type=str)
 		parser.add_argument('last_offer_time')
-		parser.add_argument('businesses', type=list)
 		parser.add_argument('interests', type=list)
 		args = parser.parse_args()
 
@@ -139,10 +138,21 @@ class UserDML(Resource):
 		if args['password'] is not None:
 		    args['password'] = sha256_crypt.hash(args['password'])
 
+
+		if args['last_offer_time'] is not None:
+			# Assumes time string format(m/d/y hour:minute, ex: 01/28/2018 15:23)
+			args['last_offer_time'] = datetime.strptime(args['last_offer_time'], '%m/%d/%Y %H:%M')
+
+
+		if args['interests'] is not None:
+			print(len(args['interests']))
+			print([n for n in args['interests']])
+			args['interests'] = [Interest.query.filter_by(name=n).one() for n in args['interests']]
+
 		# Update the user with any arg that is not None
 		for arg in args:
-		    if args[arg] is not None:
-		        setattr(user, arg, args[arg])
+			if args[arg] is not None:
+				setattr(user, arg, args[arg])
 
 		# Commit and Return the new user info
 		db.session.commit()
