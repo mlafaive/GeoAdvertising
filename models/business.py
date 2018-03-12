@@ -43,7 +43,7 @@ class Business(db.Model):
            'manager': self.manager.serialize,
            'latitude': self.latitude,
            'longitude': self.longitude,
-           'offers': [o.id for o in self.offers]
+           'offers': [o.id for o in self.offers],
        }
 
 
@@ -56,6 +56,7 @@ class Business(db.Model):
            'city': self.city.get_public_data,
            'latitude': self.latitude,
            'longitude': self.longitude,
+           'offers': [o.get_public_data for o in self.offers],
        }
 
 
