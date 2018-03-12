@@ -103,4 +103,4 @@ class BusinessOffers(Resource):
 
         # TODO: return list of actual offer objects
         # Return list of offer ids
-        return {'offers': [o.serialize for o in business.offers]}
+        return {'offers': [o.get_public_data for o in business.offers]}
