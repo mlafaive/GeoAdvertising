@@ -5,6 +5,7 @@ from extensions import db
 from models import Business, City
 import geopy
 from tzwhere import tzwhere
+from sqlalchemy import exc
 
 
 class BusinessCreate(Resource):
@@ -28,8 +29,9 @@ class BusinessCreate(Resource):
         # Get the geolocation of the store using its address, city, and state
         geo = geopy.geocoders.GoogleV3(api_key='AIzaSyD56wh0KThJ-ekY1WBICUzt_wEX6MtEH7c')
         location = geo.geocode('{}, {}, {}'.format(args["store_address"], args["city_name"], args["state_name"]))
-        city_name = location.address.split(",")[0]
-        state_name = location.address.split(",")[1]
+        store_address = location.address.split(",")[0].strip()
+        city_name = location.address.split(",")[1].strip()
+        state_name = location.address.split(",")[2].split()[0].strip()
 
         # Get the timzone of the store using its latitude and longitude
         timezone = geo.timezone((location.latitude, location.longitude))
@@ -45,7 +47,7 @@ class BusinessCreate(Resource):
         # Create business
         init = {
             "name": args["name"],
-            "store_address": args["store_address"],
+            "store_address": store_address,
             "latitude": location.latitude,
             "longitude": location.longitude,
             "manager_address": manager,
@@ -53,7 +55,11 @@ class BusinessCreate(Resource):
         }
         business = Business(**init)
         db.session.add(business)
-        db.session.commit()
+
+        try:
+            db.session.commit()
+        except exc.IntegrityError:
+            return {'error': 'business at location in same city already exists'}, 400
 
         return business.serialize, 201
 
