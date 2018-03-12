@@ -51,6 +51,7 @@ class Business(db.Model):
     def get_public_data(self):
        """Return object data in easily serializeable format"""
        return {
+           'id': self.id,
            'name': self.name,
            'store_address': self.store_address,
            'city': self.city.get_public_data,
