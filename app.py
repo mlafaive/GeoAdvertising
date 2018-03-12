@@ -19,12 +19,13 @@ api = flask_restful.Api(app)
 # Register Flask Restful resources
 api.add_resource(UserCreate, '/api/users')
 api.add_resource(UserLogin, '/api/login')
-api.add_resource(UserRefresh, '/api/users/refresh')
+api.add_resource(UserRefresh, '/api/refresh')
 api.add_resource(UserDML, '/api/users/<string:_email>')
 api.add_resource(BusinessCreate, '/api/businesses')
 api.add_resource(BusinessDML, '/api/businesses/<int:_id>')
 api.add_resource(BusinessOffers, '/api/businesses/<int:_id>/offers')
-api.add_resource(Offers, '/api/offers')
+api.add_resource(AllOffers, '/api/offers')
+api.add_resource(SingleOffer, '/api/offers/<int:_id>')
 
 # Register the controllers
 # app.register_blueprint(main)

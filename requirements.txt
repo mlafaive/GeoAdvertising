@@ -12,6 +12,7 @@ MarkupSafe==1.0
 passlib==1.7.1
 psycopg2==2.7.3.2
 PyJWT==1.6.0
+python-dateutil==2.7.0
 pytz==2018.3
 repackage==0.6
 sh==1.12.11
@@ -19,5 +20,4 @@ Shapely==1.6.4.post1
 six==1.11.0
 SQLAlchemy==1.2.2
 SQLAlchemy-Utils==0.32.21
-tzwhere==3.0.3
 Werkzeug==0.14.1

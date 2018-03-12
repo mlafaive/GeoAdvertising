@@ -125,13 +125,12 @@ class UserDML(Resource):
 		   return {'error': 'user does not exist'}, 400
 
 
-
 		# Speicfy a parser with expected arguments
 		parser = reqparse.RequestParser()
 		parser.add_argument('name', type=str)
 		parser.add_argument('password', type=str)
 		parser.add_argument('last_offer_time')
-		parser.add_argument('interests', type=list)
+		parser.add_argument('interests', type=str)
 		args = parser.parse_args()
 
 		# Encrypt password if it was posted
@@ -143,11 +142,9 @@ class UserDML(Resource):
 			# Assumes time string format(m/d/y hour:minute, ex: 01/28/2018 15:23)
 			args['last_offer_time'] = datetime.strptime(args['last_offer_time'], '%m/%d/%Y %H:%M')
 
-
+		# Convert string representation of interests into a list
 		if args['interests'] is not None:
-			print(len(args['interests']))
-			print([n for n in args['interests']])
-			args['interests'] = [Interest.query.filter_by(name=n).one() for n in args['interests']]
+			args['interests'] = ast.literal_eval(args['interests'])
 
 		# Update the user with any arg that is not None
 		for arg in args:

@@ -2,9 +2,11 @@ import flask
 from flask_restful import Resource, reqparse, HTTPException
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
 from extensions import db
-from models import Business, City
+from models import Business, City, Offer, Interest
 import geopy
-from tzwhere import tzwhere
+import dateutil
+from dateutil import *
+import ast
 from sqlalchemy import exc
 
 
@@ -92,15 +94,3 @@ class BusinessDML(Resource):
 
         # Return with a 204
         return '', 204
-
-class BusinessOffers(Resource):
-    @jwt_required
-    def get(self, _id):
-        # Ensure the business exists
-        business = Business.query.get(_id)
-        if business is None:
-            return {'error': 'business does not exist'}, 400
-
-        # TODO: return list of actual offer objects
-        # Return list of offer ids
-        return {'offers': [o.get_public_data for o in business.offers]}
