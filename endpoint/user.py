@@ -33,7 +33,10 @@ class UserCreate(Resource):
 		db.session.add(user)
 		db.session.commit()
 
-		return args, 201
+		return {
+			'access_token': create_access_token(identity = args["email"]),
+			'refresh_token': create_refresh_token(identity = args["email"])
+		}
 
 class UserRefresh(Resource):
 	@jwt_refresh_token_required

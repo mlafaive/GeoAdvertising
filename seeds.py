@@ -5,6 +5,7 @@ from sqlalchemy_utils import database_exists, create_database, drop_database
 from models import User, Business, Interest, Offer, City
 import config
 import datetime
+from passlib.hash import sha256_crypt
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
@@ -36,8 +37,8 @@ if __name__ == '__main__':
 
 
 		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
-		user1 = User('jacksmith@gmail.com', 'Jack Smith', 'password1')
-		user2 = User('janedoe@gmail.com', 'Jane Doe', 'password2')
+		user1 = User('jacksmith@gmail.com', 'Jack Smith', sha256_crypt.hash('password1'))
+		user2 = User('janedoe@gmail.com', 'Jane Doe', sha256_crypt.hash('password2'))
 
 		db.session.add(user1)
 		db.session.add(user2)
@@ -58,7 +59,7 @@ if __name__ == '__main__':
 		db.session.commit()
 
 
-		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'This is the description of the greatest offer og all time.')
+		off1 = Offer(bis1.id, datetime.datetime(2018,2,21, 0,0,0), datetime.datetime(2018,2,21, 23,59,59), 'This is the description of the greatest offer of all time.')
 		db.session.add(off1)
 
 		off1.interests.append(its1)
