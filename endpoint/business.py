@@ -72,7 +72,7 @@ class BusinessDML(Resource):
             return {'error': 'business does not exist'}, 400
 
         # Return with the business data
-        return business.serialize
+        return business.get_public_data
 
     @jwt_required
     def delete(self, _id):
