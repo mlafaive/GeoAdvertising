@@ -16,6 +16,8 @@ class Business(db.Model):
 
     offers = db.relationship('Offer', backref='business', lazy=True)
 
+    __table_args__=(db.UniqueConstraint('name','store_address','city_id',name='_business_name_address_city_uc'),)
+
     def __init__(self, name, store_address, city_id, manager_address, latitude, longitude, offers=[]):
         self.name = name
         self.store_address = store_address
