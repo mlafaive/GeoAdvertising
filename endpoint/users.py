@@ -47,6 +47,24 @@ class UserRefresh(Resource):
 		}
 
 
+class UserBusinesses(Resource):
+	@jwt_required
+	def get(self, _email):
+		# Ensure requested email and token identity are the same
+		if get_jwt_identity() != _email:
+			flask.abort(403)
+		# Retrieve User with _email from DB
+		user = User.query.get(_email)
+
+		# Check if user exists
+		if user is None:
+		   return {'error': 'user does not exist'}, 400
+
+		resp = {'businesses': [b.serialize for b in user.businesses]}
+		print(resp)
+		return resp
+
+
 class UserLogin(Resource):
 	def post(self):
 		# Specify a parser with expected arguments

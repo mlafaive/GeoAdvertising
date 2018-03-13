@@ -40,24 +40,10 @@ class Business(db.Model):
            'name': self.name,
            'store_address': self.store_address,
            'city': self.city.serialize,
-           'manager': self.manager.serialize,
            'latitude': self.latitude,
            'longitude': self.longitude,
-           'offers': [o.id for o in self.offers],
+           'offers': [o.serialize for o in self.offers],
        }
 
-
-    @property
-    def get_public_data(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'id': self.id,
-           'name': self.name,
-           'store_address': self.store_address,
-           'city': self.city.get_public_data,
-           'latitude': self.latitude,
-           'longitude': self.longitude,
-           'offers': [o.get_public_data for o in self.offers],
-       }
 
 

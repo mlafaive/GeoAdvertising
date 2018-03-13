@@ -30,19 +30,12 @@ class Offer(db.Model):
        """Return object data in easily serializeable format"""
        return {
            'id': self.id,
-           'business_id': self.business_id,
+           'business': {
+            'id': self.business.id,
+            'name': self.business.name
+           },
            'start_time': self.start_time.isoformat(),
            'end_time': self.end_time.isoformat(),
            'description': self.description,
-           'interests': [i.name for i in self.interests],
-       }
-
-    @property
-    def get_public_data(self):
-       """Return object data in easily serializeable format"""
-       return {
-           'start_time': self.start_time.isoformat(),
-           'end_time': self.end_time.isoformat(),
-           'description': self.description,
-           'interests': [i.name for i in self.interests],
+           'interests': [i.serialize for i in self.interests]
        }
