@@ -34,8 +34,8 @@ class SingleOffer(Resource):
 			return {'error': 'offer does not exist'}
 
 		# Ensure the user requesting the patch manages the business
-		business = Business.get(offer.business_id)
-		if business.manager != get_jwt_identity():
+		business = Business.query.get(offer.business_id)
+		if business.manager_address != get_jwt_identity():
 			flask.abort(403)
 
 		# Parse the request body
@@ -57,18 +57,24 @@ class SingleOffer(Resource):
 			# Parse the string
 			interests = ast.literal_eval(args["interests"])
 
-			# Remove previous interests
-			offer.interests[:] = []
-
-			# Add new interests
+			# Convert interest names to Interest objects
+			new_interests = []
 			for _interest in interests:
-				interest = Interst.query.filter_by(name=_interest)
-				if interest is none:
+				interest = Interest.query.filter_by(name=_interest).first()
+				if interest is None:
 					interest = Interest(_interest)
-				offer.interests.append(interest)
+				new_interests.append(interest)
+
+			# Replace the offer's interest with the new list
+			offer.interests[:] = new_interests
+
 
 		if args["description"] is not None:
 			offer.description = args["description"]
+
+		# Commit changes and return
+		db.session.commit()
+		return offer.serialize
 
 
 
