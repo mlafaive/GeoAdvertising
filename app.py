@@ -4,8 +4,6 @@ import flask_restful
 import flask_jwt_extended
 import controllers
 from controllers import *
-import api
-from api import *
 import endpoint
 from endpoint import *
 import config
