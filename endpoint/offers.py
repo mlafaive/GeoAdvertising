@@ -11,7 +11,6 @@ class AllOffers(Resource):
 	@jwt_required
 	def get(self):
 		# Retrieve User with _email from DB
-		Offer.query.all()
 		resp = { "offers": [i.serialize for i in Offer.query.all()] }
 		print(resp)
 		return resp
@@ -36,7 +35,9 @@ class BusinessOffers(Resource):
 
 		# TODO: return list of actual offer objects
 		# Return list of offer ids
-		return {'offers': [o.get_public_data for o in business.offers]}
+		resp = {'offers': [o.serialize for o in business.offers]}
+		print(resp)
+		return resp
 
 	@jwt_required
 	def patch(self, _id):

@@ -1,3 +1,3 @@
-from .user import *
-from .business import *
+from .users import *
+from .businesses import *
 from .offers import *

@@ -29,6 +29,5 @@ class User(db.Model):
           'email': self.email,
           'name': self.name,
           'last_offer_time': self.last_offer_time.isoformat(),
-          'businesses': [b.id for b in self.businesses],
-          'interests': [i.name for i in self.interests],
+          'interests': [i.serialize for i in self.interests],
        }
