@@ -25,6 +25,58 @@ class SingleOffer(Resource):
 
 		return offer.serialize
 
+	@jwt_required
+	def patch(self, _id):
+		# Ensure the offer exists
+		offer = Offer.query.get(_id)
+		if offer is None:
+			return {'error': 'offer does not exist'}
+
+		# Ensure the user requesting the patch manages the business
+		business = Business.query.get(offer.business_id)
+		if business.manager_address != get_jwt_identity():
+			flask.abort(403)
+
+		# Parse the request body
+		parser = reqparse.RequestParser()
+		parser.add_argument('start_time', type=str)
+		parser.add_argument('end_time', type=str)
+		parser.add_argument('description', type=str)
+		parser.add_argument('interests', type=str)
+		args = parser.parse_args()
+
+		# Convert timestamps to datetimes and update
+		if args["start_time"] is not None:
+			offer.start_time = dateutil.parser.parse(args["start_time"])
+		if args["end_time"] is not None:
+			offer.end_time = dateutil.parser.parse(args["end_time"])
+
+		# Convert interests to a list and update
+		if args["interests"] is not None:
+			# Parse the string
+			interests = ast.literal_eval(args["interests"])
+
+			# Convert interest names to Interest objects
+			new_interests = []
+			for _interest in interests:
+				interest = Interest.query.filter_by(name=_interest).first()
+				if interest is None:
+					interest = Interest(_interest)
+				new_interests.append(interest)
+
+			# Replace the offer's interest with the new list
+			offer.interests[:] = new_interests
+
+
+		if args["description"] is not None:
+			offer.description = args["description"]
+
+		# Commit changes and return
+		db.session.commit()
+		return offer.serialize
+
+
+
 class BusinessOffers(Resource):
 	@jwt_required
 	def get(self, _id):
@@ -39,9 +91,6 @@ class BusinessOffers(Resource):
 		print(resp)
 		return resp
 
-	@jwt_required
-	def patch(self, _id):
-		return ''
 
 	@jwt_required
 	def post(self, _id):
