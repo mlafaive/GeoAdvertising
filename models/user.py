@@ -6,11 +6,11 @@ class User(db.Model):
     email = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String, nullable=False)
-    last_offer_time = db.Column(db.DateTime, nullable=True)
+    last_offer_time = db.Column(db.TIMESTAMP(timezone=True), nullable=True)
     businesses = db.relationship('Business', backref='manager', lazy=True)
     interests = db.relationship('Interest', secondary=user_interest, lazy='subquery', backref=db.backref('users',lazy=True))
 
-    def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime(2000,1,1, 0,0,0)):
+    def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime.now()):
         self.email = email
         self.name = name
         self.password = password

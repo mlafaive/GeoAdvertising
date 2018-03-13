@@ -1,10 +1,11 @@
 from extensions import db
 from .offer_interest import offer_interest
+from dateutil.tz import *
 
 class Offer(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
-    start_time = db.Column(db.DateTime, nullable=False)
-    end_time = db.Column(db.DateTime, nullable=False)
+    start_time = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
+    end_time = db.Column(db.TIMESTAMP(timezone=True), nullable=False)
     description = db.Column(db.String(100), nullable=False)
 
     # Direct access to corresponding offer(offer) using Business

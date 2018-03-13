@@ -21,4 +21,3 @@ class Interest(db.Model):
            'id': self.id,
            'name': self.name,
        }
-

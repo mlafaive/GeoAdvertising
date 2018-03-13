@@ -4,6 +4,7 @@ from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from extensions import db
 import dateutil
 from dateutil import *
+from dateutil.tz import *
 import ast
 from models import Business, Offer, Interest
 
@@ -48,9 +49,9 @@ class SingleOffer(Resource):
 
 		# Convert timestamps to datetimes and update
 		if args["start_time"] is not None:
-			offer.start_time = dateutil.parser.parse(args["start_time"])
+			offer.start_time = args["start_time"]
 		if args["end_time"] is not None:
-			offer.end_time = dateutil.parser.parse(args["end_time"])
+			offer.end_time = args["end_time"]
 
 		# Convert interests to a list and update
 		if args["interests"] is not None:
@@ -110,16 +111,11 @@ class BusinessOffers(Resource):
 		parser.add_argument('interests', type=str, required=True, help='list of interests is required')
 		args = parser.parse_args()
 
-		# Create Datetime objects from UTC strings
-		# Assumes start_time and end_time are already converted to UTC,
-		start_time = dateutil.parser.parse(args["start_time"])
-		end_time = dateutil.parser.parse(args["end_time"])
-
 		# Create the offer
 		data = {
 		    'business_id': business.id,
-		    'start_time': start_time,
-		    'end_time': end_time,
+		    'start_time': args['start_time'],
+		    'end_time': args['end_time'],
 		    'description': args['description']
 		}
 		offer = Offer(**data)
