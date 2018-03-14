@@ -7,7 +7,7 @@ class User(db.Model):
     name = db.Column(db.String(50), nullable=False)
     password = db.Column(db.String, nullable=False)
     last_offer_time = db.Column(db.TIMESTAMP(timezone=True), nullable=True)
-    businesses = db.relationship('Business', backref='manager', lazy=True)
+    businesses = db.relationship('Business', backref='manager', lazy=True, cascade='all, delete-orphan')
     interests = db.relationship('Interest', secondary=user_interest, lazy='subquery', backref=db.backref('users',lazy=True))
 
     def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime.now()):

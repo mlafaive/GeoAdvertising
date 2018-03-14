@@ -148,7 +148,7 @@ class UserDML(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('name', type=str)
 		parser.add_argument('password', type=str)
-		parser.add_argument('last_offer_time')
+		parser.add_argument('last_offer_time', type=str)
 		parser.add_argument('interests', type=str)
 		args = parser.parse_args()
 

@@ -14,7 +14,7 @@ class Business(db.Model):
     city_id = db.Column(db.Integer, db.ForeignKey('city.id'), nullable=False)
 
 
-    offers = db.relationship('Offer', backref='business', lazy=True)
+    offers = db.relationship('Offer', backref='business', lazy=True, cascade='all, delete-orphan')
 
     __table_args__=(db.UniqueConstraint('name','store_address','city_id',name='_business_name_address_city_uc'),)
 
@@ -44,6 +44,3 @@ class Business(db.Model):
            'longitude': self.longitude,
            'offers': [o.serialize for o in self.offers],
        }
-
-
-
