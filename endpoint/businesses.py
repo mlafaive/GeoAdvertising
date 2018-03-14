@@ -8,7 +8,7 @@ import dateutil
 from dateutil import *
 import ast
 from sqlalchemy import exc
-
+import re
 
 class BusinessCreate(Resource):
     @jwt_required
@@ -22,6 +22,27 @@ class BusinessCreate(Resource):
         parser.add_argument('city_name', type=str, required=True)
         parser.add_argument('state_name', type=str, required=True)
         args = parser.parse_args()
+
+
+        # Scrub name argument for length between 1 and 50
+        # Business name can include any characters
+        if re.match('^.{1,50}$', args['name']) is None:
+            return {'error': 'specified name is too short or too long'}, 400
+
+        # Scrub store address for length between 1 and 50
+        if re.match('^.{1,50}$', args['store_address']) is None:
+            return {'error': 'specified store_address is too short or too long'}, 400
+
+        # Scrub city name for length between 1 and 50
+        if re.match('^.{1,50}$', args['city_name']) is None:
+            return {'error': 'specified city_name is not formatted correctly'}, 400
+
+        # Scrub state name for length between 1 and 50
+        if re.match('^.{1,50}$', args['state_name']) is None:
+            return {'error': 'specified state_name is not formatted correctly'}, 400
+
+
+
 
         # Set manager to the token's identity, and add to args
         manager = get_jwt_identity()
