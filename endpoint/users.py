@@ -6,6 +6,7 @@ from models import User, Interest
 from passlib.hash import sha256_crypt
 from datetime import datetime
 import ast
+import re
 
 # TODO: Parse Input // handle the errors properly
 
@@ -17,6 +18,27 @@ class UserCreate(Resource):
 		parser.add_argument('email', type=str, required=True, help='email is required')
 		parser.add_argument('password', type=str, required=True, help='password is required')
 		args = parser.parse_args()
+
+
+		# Scrub name argument for length between 1 and 50
+		# User name can include any characters
+		if re.match('^.{1,50}$', args['name']) is None:
+			return {'error': 'specified name is too short or too long'}, 400
+
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', args['email']) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', args['email']) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+		# Scrub password argument for length between 8 and 50
+		if re.match('^.{8,50}$', args['password']) is None:
+			return {'error': 'specified password is too short or too long'}, 400
+
+        
+
+
 
 
 		# Retrieve User with _email from DB
@@ -51,6 +73,16 @@ class UserRefresh(Resource):
 class UserBusinesses(Resource):
 	@jwt_required
 	def get(self, _email):
+
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', _email) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', _email) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
+
 		# Ensure requested email and token identity are the same
 		if get_jwt_identity() != _email:
 			flask.abort(403)
@@ -74,6 +106,20 @@ class UserLogin(Resource):
 		parser.add_argument('password', type=str, required=True, help='password is required')
 		args = parser.parse_args()
 
+
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', args['email']) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', args['email']) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
+		# Scrub password argument for length between 8 and 50
+		if re.match('^.{8,50}$', args['password']) is None:
+			return {'error': 'specified password is too short or too long'}, 400
+
+
 		# Retrieve the user
 		user = User.query.get(args["email"])
 
@@ -93,6 +139,14 @@ class UserLogin(Resource):
 class UserDML(Resource):
 	@jwt_required
 	def get(self, _email):
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', _email) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', _email) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
 		# Ensure requested email and token identity are the same
 		if get_jwt_identity() != _email:
 			flask.abort(403)
@@ -110,6 +164,14 @@ class UserDML(Resource):
 
 	@jwt_required
 	def delete(self, _email):
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', _email) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', _email) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
 		# Ensure requested email and token identity are the same
 		if get_jwt_identity() != _email:
 			flask.abort(403)
@@ -131,6 +193,15 @@ class UserDML(Resource):
 	# TODO: Figure out how datetimes should be parsed
 	@jwt_required
 	def patch(self, _email):
+
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', _email) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', _email) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
 		# Ensure requested email and token identity are the same
 		if get_jwt_identity() != _email:
 			flask.abort(403)
@@ -141,7 +212,7 @@ class UserDML(Resource):
 
 		# Check if user exists
 		if user is None:
-		   return {'error': 'user does not exist'}, 400
+			return {'error': 'user does not exist'}, 400
 
 
 		# Speicfy a parser with expected arguments
@@ -154,11 +225,26 @@ class UserDML(Resource):
 
 		#
 		if args["name"] is not None:
+			# Scrub name argument for length between 1 and 50
+			# User name can include any characters
+			if re.match('^.{1,50}$', args['name']) is None:
+				return {'error': 'specified name is too short or too long'}, 400
+
 			user.name = args["name"]
+
+
+
+
 
 		# Encrypt password if it was posted
 		if args['password'] is not None:
-		    user.password = sha256_crypt.hash(args['password'])
+			# Scrub password argument for length between 8 and 50
+			if re.match('^.{8,50}$', args['password']) is None:
+				return {'error': 'specified password is too short or too long'}, 400
+
+			user.password = sha256_crypt.hash(args['password'])
+
+
 
 
 		if args['last_offer_time'] is not None:
