@@ -12,6 +12,7 @@ from extensions import *
 
 # Initialize Flask and Flask_Restful apps
 app = Flask(__name__)
+app.url_map.strict_slashes = False
 api = flask_restful.Api(app)
 
 # Register Flask Restful resources
