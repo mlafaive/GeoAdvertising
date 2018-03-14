@@ -86,10 +86,8 @@ class BusinessOffers(Resource):
 		if business is None:
 		    return {'error': 'business does not exist'}, 400
 
-		# TODO: return list of actual offer objects
 		# Return list of offer ids
 		resp = {'offers': [o.serialize for o in business.offers]}
-		print(resp)
 		return resp
 
 

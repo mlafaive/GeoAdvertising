@@ -5,6 +5,7 @@ from extensions import db
 from models import User, Interest
 from passlib.hash import sha256_crypt
 from datetime import datetime
+import ast
 
 # TODO: Parse Input // handle the errors properly
 
@@ -151,23 +152,34 @@ class UserDML(Resource):
 		parser.add_argument('interests', type=str)
 		args = parser.parse_args()
 
+		#
+		if args["name"] is not None:
+			user.name = args["name"]
+
 		# Encrypt password if it was posted
 		if args['password'] is not None:
-		    args['password'] = sha256_crypt.hash(args['password'])
+		    user.password = sha256_crypt.hash(args['password'])
 
 
 		if args['last_offer_time'] is not None:
 			# Assumes time string format(m/d/y hour:minute, ex: 01/28/2018 15:23)
-			args['last_offer_time'] = datetime.strptime(args['last_offer_time'], '%m/%d/%Y %H:%M')
+			user.last_offer_time = args['last_offer_time']
 
 		# Convert string representation of interests into a list
 		if args['interests'] is not None:
-			args['interests'] = ast.literal_eval(args['interests'])
+			# Parse the string
+			interests = ast.literal_eval(args["interests"])
 
-		# Update the user with any arg that is not None
-		for arg in args:
-			if args[arg] is not None:
-				setattr(user, arg, args[arg])
+			# Convert interest names to Interest objects
+			new_interests = []
+			for _interest in interests:
+				interest = Interest.query.filter_by(name=_interest).first()
+				if interest is None:
+					interest = Interest(_interest)
+				new_interests.append(interest)
+
+			# Replace the users's interest with the new list
+			user.interests[:] = new_interests
 
 		# Commit and Return the new user info
 		db.session.commit()
