@@ -52,6 +52,9 @@ class BusinessCreate(Resource):
         # Get the geolocation of the store using its address, city, and state
         geo = geopy.geocoders.GoogleV3(api_key='AIzaSyD56wh0KThJ-ekY1WBICUzt_wEX6MtEH7c')
         location = geo.geocode('{}, {}, {}'.format(args["store_address"], args["city_name"], args["state_name"]))
+        if location is None:
+            return {'error': 'location does not exist'}, 400
+
         store_address = location.address.split(",")[0].strip()
         city_name = location.address.split(",")[1].strip()
         state_name = location.address.split(",")[2].split()[0].strip()
