@@ -6,6 +6,7 @@ from models import User, Business, Interest, Offer, City
 import config
 import datetime
 from passlib.hash import sha256_crypt
+from subprocess import call
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
@@ -31,9 +32,7 @@ if __name__ == '__main__':
 		else:
 			db.create_all()
 			db.session.commit()
-
-			User.query.delete()
-			print('To reset ids run reset from heroku account')
+			call('heroku pg:reset {}'.format(DB_URL))
 
 
 		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
