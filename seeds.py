@@ -30,9 +30,9 @@ if __name__ == '__main__':
 			db.create_all()
 			db.session.commit()
 		else:
+			print('run: `heroku pg:reset {}` and rerun seeds to update db'.format(DB_URL))
 			db.create_all()
 			db.session.commit()
-			call('heroku pg:reset {}'.format(DB_URL))
 
 
 		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
