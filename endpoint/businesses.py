@@ -55,17 +55,21 @@ class BusinessCreate(Resource):
         store_address = location.address.split(",")[0].strip()
         city_name = location.address.split(",")[1].strip()
         state_name = location.address.split(",")[2].split()[0].strip()
-
+        
+        
         # Get the timzone of the store using its latitude and longitude
         timezone = geo.timezone((location.latitude, location.longitude))
 
         # Fetch the City or create if it doesn't exist
         city = City.query.filter_by(city_name = city_name, state_name = state_name).first()
         if city is None:
-            city = City(city_name = city_name, state_name = state_name, timezone = timezone.zone)
+            city_location = geo.geocode('{}, {}'.format(args["city_name"], args["state_name"]))
+            city_latitude = city_location.latitude
+            city_longitude = city_location.longitude
+            city = City(city_name = city_name, state_name = state_name, timezone = timezone.zone, latitude=city_latitude, longitude=city_longitude)
             db.session.add(city)
             db.session.flush()
-            # ^ Does SA update the city here???
+            
 
         # Create business
         init = {
