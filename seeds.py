@@ -43,7 +43,7 @@ if __name__ == '__main__':
 		db.session.add(user1)
 		db.session.add(user2)
 
-		cit1 = City('Ann Arbor', 'Michigan', 'EST')
+		cit1 = City('Ann Arbor', 'Michigan', 'EST', 36.1, -121.1)
 		db.session.add(cit1)
 
 		#                  name,    business_type, store_address,          city_id, email,    phone_number, latitude,   longitude, manager_id,  unit_number=None
