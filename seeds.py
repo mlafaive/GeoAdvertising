@@ -30,7 +30,6 @@ if __name__ == '__main__':
 			db.create_all()
 			db.session.commit()
 		else:
-			print('run: `heroku pg:reset {}` and rerun seeds to update db'.format(DB_URL))
 			db.create_all()
 			db.session.commit()
 
