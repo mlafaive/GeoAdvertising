@@ -2,6 +2,7 @@ import flask
 from flask_restful import Resource, reqparse, HTTPException
 from flask_jwt_extended import (jwt_required, get_jwt_identity)
 from extensions import db
+from sqlalchemy import exc
 import dateutil
 from dateutil import *
 from dateutil.tz import *
@@ -127,6 +128,12 @@ class BusinessOffers(Resource):
 			offer.interests.append(interest)
 
 		db.session.add(offer)
-		db.session.commit()
+
+		try:
+			db.session.commit()
+		except exc.IntegrityError:
+			db.session.rollback()
+			return {'error': 'offer with same description already owned by business'}, 400
+
 
 		return offer.serialize, 201
