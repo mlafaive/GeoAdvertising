@@ -2,11 +2,13 @@ import flask
 from flask_restful import Resource, reqparse, HTTPException
 from flask_jwt_extended import (create_access_token, create_refresh_token, jwt_required, jwt_refresh_token_required, get_jwt_identity)
 from extensions import db
-from models import User, Interest
+from models import User, Interest, City, Business
 from passlib.hash import sha256_crypt
-from datetime import datetime
+import datetime
+from math import radians, sin, cos, sqrt, atan2
 import ast
 import re
+import random
 
 # TODO: Parse Input // handle the errors properly
 
@@ -270,3 +272,134 @@ class UserDML(Resource):
 		# Commit and Return the new user info
 		db.session.commit()
 		return user.serialize, 200
+
+
+
+def loc_distance(user_loc,city_loc):
+	R=6373.0
+
+	user_lat,user_lon=user_loc
+	city_lat,city_lon=city_loc
+
+	user_lat_rad = radians(user_lat)
+	user_lon_rad = radians(user_lon)
+
+	city_lat_rad = radians(city_lat)
+	city_lon_rad = radians(city_lon)
+
+	diff_lat = user_lat_rad-city_lat_rad
+	diff_lon = user_lon_rad-city_lon_rad
+
+	a = sin(diff_lat/2)**2 + cos(user_lat_rad) * cos(city_lat_rad) * sin(diff_lon/2)**2
+	c = 2 * atan2(sqrt(a), sqrt(1-a))
+
+	dist = R * c
+
+	return dist
+
+class UserOffers(Resource):
+	@jwt_required
+	def post(self, _email):
+		# Scrub email argument for length between 1 and 50
+		if re.match('^.{1,50}$', _email) is None:
+			return {'error': 'specified email is too short or too long'}, 400
+		# Scrub email argument for formatting according to RFC 5322
+		if re.match('(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)', _email) is None:
+			return {'error': 'specified email is not valid'}, 400
+
+
+		# Ensure requested email and token identity are the same
+		if get_jwt_identity() != _email:
+			flask.abort(403)
+
+
+		# Retrieve User with _email from DB
+		user = User.query.get(_email)
+
+		# Check if user exists
+		if user is None:
+		   return {'error': 'user does not exist'}, 400
+
+
+
+		#print(user.last_offer_time, datetime.datetime.utcnow(), datetime.datetime.now(datetime.timezone.utc))
+		now = datetime.datetime.now(datetime.timezone.utc)
+		#print(now-user.last_offer_time)
+		if now-user.last_offer_time<datetime.timedelta(minutes=1):
+			return {'result': 'no offer at this time'}, 200
+		
+		user.last_offer_time = now
+
+
+		# Speicfy a parser with expected arguments
+		parser = reqparse.RequestParser()
+		parser.add_argument('latitude', type=float)
+		parser.add_argument('longitude', type=float)
+		args = parser.parse_args()
+
+
+		# Find all cities
+		cities = City.query.all()
+
+		print('found',len(cities),'cities')
+		# If no cities found, do not proceed with search
+		if len(cities)==0:
+			return {'result': 'you are not located near any city'}, 200
+
+		# Extract city id and distance from user
+		city_ids = [(city.id,loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
+		# Sort city ids on distance to user in increasing order
+		city_ids.sort(key=lambda tup: tup[1])
+
+		closest_city_id = city_ids[0]
+		print(closest_city_id)
+		# If the closest city is more than 24.14km(15mi) from user location, return no offers
+		if closest_city_id[1] > 24.14:
+			return {'result': 'you are not located near any city'}, 200
+
+		# Find object of closest city
+		closest_city = City.query.get(closest_city_id[0])
+		print(closest_city)
+		print(closest_city.businesses)
+
+		# Check if there are any businesses in the closest city
+		if len(closest_city.businesses)==0:
+			return {'result', 'there are no businesses in the closest city to you'}, 200
+		
+		#close_businesses = [(business,loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))) for offer in business.offers for business in closest_city.businesses]
+		close_offers = []
+		for business in closest_city.businesses:
+			business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
+			if business_dist < 0.2:
+				for offer in business.offers:
+					if not set(offer.interests).isdisjoint(user.interests):
+						close_offers.append(offer)
+
+
+		if len(close_offers)==0:
+			return {'result': 'there are no close offers'},200
+		else:
+			rand_close_offer = random.choice(close_offers)
+			return {'result': rand_close_offer.serialize}, 200
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
