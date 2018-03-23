@@ -345,14 +345,16 @@ class UserOffers(Resource):
 
 
 
-		#print(user.last_offer_time, datetime.datetime.utcnow(), datetime.datetime.now(datetime.timezone.utc))
+		print(user.last_offer_time)
+		print(datetime.datetime.now(datetime.timezone.utc))
 		now = datetime.datetime.now(datetime.timezone.utc)
-		#print(now-user.last_offer_time)
+		print(now-user.last_offer_time)
 		if now-user.last_offer_time<datetime.timedelta(minutes=1):
 			return {'result': 'no offer at this time'}, 200
 		
 		user.last_offer_time = now
-
+		print(user.last_offer_time)
+		db.session.commit()
 
 		# Speicfy a parser with expected arguments
 		parser = reqparse.RequestParser()
