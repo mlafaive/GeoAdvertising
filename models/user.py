@@ -10,7 +10,7 @@ class User(db.Model):
     businesses = db.relationship('Business', backref='manager', lazy=True, cascade='all, delete-orphan')
     interests = db.relationship('Interest', secondary=user_interest, lazy='subquery', backref=db.backref('users',lazy=True))
 
-    def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime.now()):
+    def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime.now(datetime.timezone.utc)):
         self.email = email
         self.name = name
         self.password = password
