@@ -89,6 +89,7 @@ class BusinessCreate(Resource):
         try:
             db.session.commit()
         except exc.IntegrityError:
+            db.session.rollback()
             return {'error': 'business at location in same city already exists'}, 400
 
         return business.serialize, 201
