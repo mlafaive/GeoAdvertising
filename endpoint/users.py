@@ -345,15 +345,15 @@ class UserOffers(Resource):
 
 
 
-		print(user.last_offer_time)
-		print(datetime.datetime.now(datetime.timezone.utc))
+		#print(user.last_offer_time)
+		#print(datetime.datetime.now(datetime.timezone.utc))
 		now = datetime.datetime.now(datetime.timezone.utc)
-		print(now-user.last_offer_time)
+		#print(now-user.last_offer_time)
 		if now-user.last_offer_time<datetime.timedelta(minutes=1):
 			return {'result': 'no offer at this time'}, 200
 		
 		user.last_offer_time = now
-		print(user.last_offer_time)
+		#print(user.last_offer_time)
 		db.session.commit()
 
 		# Speicfy a parser with expected arguments
@@ -366,26 +366,26 @@ class UserOffers(Resource):
 		# Find all cities
 		cities = City.query.all()
 
-		print('found',len(cities),'cities')
+		#print('found',len(cities),'cities')
 		# If no cities found, do not proceed with search
 		if len(cities)==0:
 			return {'result': 'you are not located near any city'}, 200
 
 		# Extract city id and distance from user
-		city_ids = [(city.id,loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
+		cities = [(city,loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
 		# Sort city ids on distance to user in increasing order
-		city_ids.sort(key=lambda tup: tup[1])
+		cities.sort(key=lambda tup: tup[1])
 
-		closest_city_id = city_ids[0]
-		print(closest_city_id)
+		closest_city = cities[0]
+		#print(closest_city)
 		# If the closest city is more than 24.14km(15mi) from user location, return no offers
-		if closest_city_id[1] > 24.14:
+		if closest_city[1] > 24.14:
 			return {'result': 'you are not located near any city'}, 200
 
 		# Find object of closest city
-		closest_city = City.query.get(closest_city_id[0])
-		print(closest_city)
-		print(closest_city.businesses)
+		closest_city = closest_city[0]
+		#print(closest_city)
+		#print(closest_city.businesses)
 
 		# Check if there are any businesses in the closest city
 		if len(closest_city.businesses)==0:
