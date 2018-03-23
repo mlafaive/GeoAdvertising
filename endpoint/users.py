@@ -313,6 +313,29 @@ class UserOffers(Resource):
 			flask.abort(403)
 
 
+		# Pseudo code description of algorithm
+		#
+		#
+		# Check if user exists
+		#  if no, return error
+
+		# If user exists, check if enough time has passed since last offer
+		#  if no, return error
+
+		# Get all cities
+		# Calculate distance from cities to user
+		# Sort list of cities to find closest city
+		#  if closest city is further than 15 miles from user, return error
+
+		# If no businesses are located in closest city, return error
+
+		# For each business closer than 0.125mi to user in the closest city
+		#  for each offer of business
+		#   if offer shares any interest with user add it to list
+
+		# If any offers in list, return random offer
+
+
 		# Retrieve User with _email from DB
 		user = User.query.get(_email)
 
