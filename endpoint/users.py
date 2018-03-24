@@ -297,9 +297,43 @@ def loc_distance(user_loc,city_loc):
 
 	return dist
 
+
+
+
+
+
+
+
+
+
 class UserOffers(Resource):
 	@jwt_required
 	def post(self, _email):
+		# Pseudo code description of algorithm
+		#
+		#
+		# Check if user exists
+		#  if no, return error
+		#
+		# If user exists, check if enough time has passed since last offer
+		#  if no, return error
+		#
+		# Get all cities
+		# Calculate distance from cities to user
+		# Sort list of cities to find closest city
+		#  if closest city is further than 15 miles from user, return error
+		#
+		# If no businesses are located in closest city, return error
+		#
+		# For each business closer than 0.125mi to user in the closest city
+		#  for each offer of business
+		#   if offer shares any interest with user add it to list
+		#
+		# If any offers in list, return random offer
+
+
+
+
 		# Scrub email argument for length between 1 and 50
 		if re.match('^.{1,50}$', _email) is None:
 			return {'error': 'specified email is too short or too long'}, 400
@@ -308,104 +342,121 @@ class UserOffers(Resource):
 			return {'error': 'specified email is not valid'}, 400
 
 
+		#
 		# Ensure requested email and token identity are the same
+		#
 		if get_jwt_identity() != _email:
 			flask.abort(403)
 
 
-		# Pseudo code description of algorithm
-		#
-		#
-		# Check if user exists
-		#  if no, return error
-
-		# If user exists, check if enough time has passed since last offer
-		#  if no, return error
-
-		# Get all cities
-		# Calculate distance from cities to user
-		# Sort list of cities to find closest city
-		#  if closest city is further than 15 miles from user, return error
-
-		# If no businesses are located in closest city, return error
-
-		# For each business closer than 0.125mi to user in the closest city
-		#  for each offer of business
-		#   if offer shares any interest with user add it to list
-
-		# If any offers in list, return random offer
+		
 
 
 		# Retrieve User with _email from DB
 		user = User.query.get(_email)
-
 		# Check if user exists
 		if user is None:
 		   return {'error': 'user does not exist'}, 400
 
 
 
-		#print(user.last_offer_time)
-		#print(datetime.datetime.now(datetime.timezone.utc))
-		now = datetime.datetime.now(datetime.timezone.utc)
-		#print(now-user.last_offer_time)
-		if now-user.last_offer_time<datetime.timedelta(minutes=1):
+		#
+		# CHECK IF ENOUGH TIME HAS PASSED SINCE LAST OFFER
+		#
+		# Get current time in utc, matching timezone of user.last_offer_time
+		current_time = datetime.datetime.now(datetime.timezone.utc)
+		# If difference in time between now and last offer is less than expected
+		#  return error, and no offer
+		if current_time - user.last_offer_time < datetime.timedelta(minutes=1):
 			return {'result': 'no offer at this time'}, 200
 		
-		user.last_offer_time = now
-		#print(user.last_offer_time)
-		db.session.commit()
 
-		# Speicfy a parser with expected arguments
+
+
+		#
+		# PARSE THE POSTED ARGUMENTS
+		#
 		parser = reqparse.RequestParser()
 		parser.add_argument('latitude', type=float)
 		parser.add_argument('longitude', type=float)
 		args = parser.parse_args()
 
 
+
+
+
+		#
+		# FIND CLOSEST CITY TO USER
+		#
 		# Find all cities
 		cities = City.query.all()
-
-		#print('found',len(cities),'cities')
 		# If no cities found, do not proceed with search
 		if len(cities)==0:
 			return {'result': 'you are not located near any city'}, 200
 
-		# Extract city id and distance from user
-		cities = [(city,loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
-		# Sort city ids on distance to user in increasing order
+		# Calculate distance to user for each city
+		cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
+		# Sort list of cities on distance to user in increasing order
 		cities.sort(key=lambda tup: tup[1])
 
+		# Get closest city to user at first position in list
 		closest_city = cities[0]
-		#print(closest_city)
+
 		# If the closest city is more than 24.14km(15mi) from user location, return no offers
 		if closest_city[1] > 24.14:
 			return {'result': 'you are not located near any city'}, 200
 
-		# Find object of closest city
+		# Get city object of closest city to user
 		closest_city = closest_city[0]
-		#print(closest_city)
-		#print(closest_city.businesses)
 
-		# Check if there are any businesses in the closest city
+
+
+
+
+		#
+		# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY 
+		#
 		if len(closest_city.businesses)==0:
 			return {'result', 'there are no businesses in the closest city to you'}, 200
 		
-		#close_businesses = [(business,loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))) for offer in business.offers for business in closest_city.businesses]
+
+
+
+
+		#
+		# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
+		#
 		close_offers = []
 		for business in closest_city.businesses:
+			# Check distance from business to user
 			business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
 			if business_dist < 0.2:
+				# Consider all offers of businesses within 0.2km(0.125mi) of user
 				for offer in business.offers:
-					if not set(offer.interests).isdisjoint(user.interests):
+
+					offer_live = (offer.start_time < current_time and current_time < offer.end_time)
+					offer_relevant = (not set(offer.interests).isdisjoint(user.interests))
+
+					# If offer is currently active and relevant to the user, add it to list
+					if offer_live and offer_relevant:
 						close_offers.append(offer)
 
-
+		# If no offers were found to be close, live and relevant, return no offer
 		if len(close_offers)==0:
-			return {'result': 'there are no close offers'},200
-		else:
-			rand_close_offer = random.choice(close_offers)
-			return {'result': rand_close_offer.serialize}, 200
+			return {'result': 'there are no close offers'}, 200
+		
+
+
+		#
+		# Otherwise return a random close, live and relevant offer
+		#
+		# Update last_offer_time of user to now
+		user.last_offer_time = current_time
+		db.session.commit()
+
+		# Pick and return a random offer from the list of close, relevant offers
+		rand_close_offer = random.choice(close_offers)
+		return {'result': rand_close_offer.serialize}, 200
 
 
 
