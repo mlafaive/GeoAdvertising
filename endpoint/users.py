@@ -236,15 +236,18 @@ class UserDML(Resource):
 			user.name = args["name"]
 
 
-
-		if re.match('^.{8,50}$', args["old_password"]) is None:
-			return {'error': 'specified password is too short or too long'}, 400
-
-		if sha256_crypt.verify(args["old_password"], user.password) is False:
-			return {'error': 'the password provided is invalid'}, 400
 		
 		# Encrypt password if it was posted
 		if args['password'] is not None:
+			if args["old_password"] is None:
+				return {'error': 'must send old password to update'}, 400
+
+			if re.match('^.{8,50}$', args["old_password"]) is None:
+				return {'error': 'specified password is too short or too long'}, 400
+
+			if sha256_crypt.verify(args["old_password"], user.password) is False:
+				return {'error': 'the password provided is invalid'}, 400
+
 			# Scrub password argument for length between 8 and 50
 			if re.match('^.{8,50}$', args['password']) is None:
 				return {'error': 'specified password is too short or too long'}, 400
