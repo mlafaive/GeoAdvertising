@@ -15,7 +15,7 @@ def main_hello():
     all_offers = [i.serialize for i in Offer.query.all()]
     all_cities = [i.serialize for i in City.query.all()]
 
-    resp = jsonify(all_users+all_businesses+all_interests+all_offers+all_cities)
+    resp = jsonify({'USERS':all_users,'BUSINESSES':all_businesses,'INTERESTS':all_interests,'OFFERS':all_offers,'CITIES':all_cities})
     resp.status_code = 200
 
     return resp

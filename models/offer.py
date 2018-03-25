@@ -13,6 +13,8 @@ class Offer(db.Model):
 
     interests = db.relationship('Interest', secondary=offer_interest, lazy='subquery', backref=db.backref('offers',lazy=True))
 
+    __table_args__=(db.UniqueConstraint('description','business_id',name='_offer_description_business_uc'),)
+
     def __init__(self, business_id, start_time, end_time, description, interests=[]):
         self.business_id = business_id
         self.start_time = start_time
