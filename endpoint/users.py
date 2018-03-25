@@ -219,6 +219,7 @@ class UserDML(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('name', type=str)
 		parser.add_argument('password', type=str)
+		parser.add_argument('old_password', type=str)
 		parser.add_argument('last_offer_time', type=str)
 		parser.add_argument('interests', type=str)
 		args = parser.parse_args()
@@ -234,8 +235,12 @@ class UserDML(Resource):
 
 
 
+		if re.match('^.{8,50}$', args["old_password"]) is None:
+			return {'error': 'specified password is too short or too long'}, 400
 
-
+		if sha256_crypt.verify(args["old_password"], user.password) is False:
+			return {'error': 'the password provided is invalid'}, 400
+		
 		# Encrypt password if it was posted
 		if args['password'] is not None:
 			# Scrub password argument for length between 8 and 50
