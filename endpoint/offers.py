@@ -70,7 +70,7 @@ class SingleOffer(Resource):
 		parser.add_argument('start_time', type=str)
 		parser.add_argument('end_time', type=str)
 		parser.add_argument('description', type=str)
-		parser.add_argument('interests', type=list)
+		parser.add_argument('interests', type=list, location='json')
 		args = parser.parse_args()
 
 
@@ -89,6 +89,8 @@ class SingleOffer(Resource):
 		# Convert interests to a list and update
 		#
 		if args["interests"] is not None:
+			if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
 			# Make sure all are integers
 			if not all(isinstance(x,int) for x in args["interests"]):
 				return {'error': 'ids must be integers'}, 400
@@ -160,7 +162,7 @@ class BusinessOffers(Resource):
 		parser.add_argument('start_time', type=str, required=True, help='start_time is required and must be in UTC format')
 		parser.add_argument('end_time', type=str, required=True, help='end_time is required and must be in UTC format')
 		parser.add_argument('description', type=str, required=True, help='description of the offer is required')
-		parser.add_argument('interests', type=list, required=True, help='list of interests is required')
+		parser.add_argument('interests', type=list, required=True, help='list of interests is required', location='json')
 		args = parser.parse_args()
 
 
@@ -177,6 +179,9 @@ class BusinessOffers(Resource):
 		offer = Offer(**data)
 
 		# Check if all integers
+		if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
+
 		if not all(isinstance(x,int) for x in args["interests"]):
 			return {'error': 'interest ids must be integers'}, 400
 		# Convert interest names to Interest objects
