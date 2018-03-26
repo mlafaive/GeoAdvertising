@@ -223,7 +223,7 @@ class UserDML(Resource):
 		parser.add_argument('password', type=str)
 		parser.add_argument('old_password', type=str)
 		parser.add_argument('last_offer_time', type=str)
-		parser.add_argument('interests', type=list)
+		parser.add_argument('interests', type=list, location='json')
 		args = parser.parse_args()
 
 		#
@@ -263,13 +263,16 @@ class UserDML(Resource):
 
 		# Convert string representation of interests into a list
 		if args['interests'] is not None:
-			# Parse the string
-			if not all(isinstance(x,int) for x in args["interests"]):
-				return {'error': 'interest ids must be integers'}, 400
-
 			# Convert interest names to Interest objects
 			new_interests = []
+
+			if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
+
 			for _interest in args["interests"]:
+				if not isinstance(_interest, int):
+					return {'error': 'interest ids must be integers'}, 400
+
 				interest = Interest.query.get(_interest)
 				if interest is None:
 					return {'error': 'interest does not exist'}, 400
