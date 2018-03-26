@@ -70,7 +70,7 @@ class SingleOffer(Resource):
 		parser.add_argument('start_time', type=str)
 		parser.add_argument('end_time', type=str)
 		parser.add_argument('description', type=str)
-		parser.add_argument('interests', type=str)
+		parser.add_argument('interests', type=list, location='json')
 		args = parser.parse_args()
 
 
@@ -89,15 +89,17 @@ class SingleOffer(Resource):
 		# Convert interests to a list and update
 		#
 		if args["interests"] is not None:
-			# Parse the string
-			interests = ast.literal_eval(args["interests"])
-
+			if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
+			# Make sure all are integers
+			if not all(isinstance(x,int) for x in args["interests"]):
+				return {'error': 'ids must be integers'}, 400
 			# Convert interest names to Interest objects
 			new_interests = []
-			for _interest in interests:
-				interest = Interest.query.filter_by(name=_interest).first()
+			for _interest in args["interests"]:
+				interest = Interest.query.get(_interest)
 				if interest is None:
-					interest = Interest(_interest)
+					return {'error': 'interest does not exist'}, 400
 				new_interests.append(interest)
 
 			# Replace the offer's interest with the new list
@@ -188,7 +190,7 @@ class BusinessOffers(Resource):
 		parser.add_argument('start_time', type=str, required=True, help='start_time is required and must be in UTC format')
 		parser.add_argument('end_time', type=str, required=True, help='end_time is required and must be in UTC format')
 		parser.add_argument('description', type=str, required=True, help='description of the offer is required')
-		parser.add_argument('interests', type=str, required=True, help='list of interests is required')
+		parser.add_argument('interests', type=list, required=True, help='list of interests is required', location='json')
 		args = parser.parse_args()
 
 
@@ -204,16 +206,22 @@ class BusinessOffers(Resource):
 		}
 		offer = Offer(**data)
 
+		# Check if all integers
+		if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
 
-
-		#
-		# Append the interests to the offer
-		#
-		for _interest in ast.literal_eval(args['interests']):
-			interest = Interest.query.filter_by(name=_interest).first()
+		if not all(isinstance(x,int) for x in args["interests"]):
+			return {'error': 'interest ids must be integers'}, 400
+		# Convert interest names to Interest objects
+		new_interests = []
+		for _interest in args["interests"]:
+			interest = Interest.query.get(_interest)
 			if interest is None:
-				interest = Interest(_interest)
-			offer.interests.append(interest)
+				return {'error': 'interest does not exist'}, 400
+			new_interests.append(interest)
+
+		# Replace the offer's interest with the new list
+		offer.interests[:] = new_interests
 
 
 		db.session.add(offer)

@@ -221,8 +221,9 @@ class UserDML(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('name', type=str)
 		parser.add_argument('password', type=str)
+		parser.add_argument('old_password', type=str)
 		parser.add_argument('last_offer_time', type=str)
-		parser.add_argument('interests', type=str)
+		parser.add_argument('interests', type=list, location='json')
 		args = parser.parse_args()
 
 		#
@@ -235,11 +236,18 @@ class UserDML(Resource):
 			user.name = args["name"]
 
 
-
-
-
+		
 		# Encrypt password if it was posted
 		if args['password'] is not None:
+			if args["old_password"] is None:
+				return {'error': 'must send old password to update'}, 400
+
+			if re.match('^.{8,50}$', args["old_password"]) is None:
+				return {'error': 'specified password is too short or too long'}, 400
+
+			if sha256_crypt.verify(args["old_password"], user.password) is False:
+				return {'error': 'the password provided is invalid'}, 400
+
 			# Scrub password argument for length between 8 and 50
 			if re.match('^.{8,50}$', args['password']) is None:
 				return {'error': 'specified password is too short or too long'}, 400
@@ -255,15 +263,19 @@ class UserDML(Resource):
 
 		# Convert string representation of interests into a list
 		if args['interests'] is not None:
-			# Parse the string
-			interests = ast.literal_eval(args["interests"])
-
 			# Convert interest names to Interest objects
 			new_interests = []
-			for _interest in interests:
-				interest = Interest.query.filter_by(name=_interest).first()
+
+			if not isinstance(args["interests"], list):
+				return {'error': 'interests must be a list'}, 400
+
+			for _interest in args["interests"]:
+				if not isinstance(_interest, int):
+					return {'error': 'interest ids must be integers'}, 400
+
+				interest = Interest.query.get(_interest)
 				if interest is None:
-					interest = Interest(_interest)
+					return {'error': 'interest does not exist'}, 400
 				new_interests.append(interest)
 
 			# Replace the users's interest with the new list

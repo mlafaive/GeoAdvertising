@@ -6,6 +6,7 @@ from models import User, Business, Interest, Offer, City
 import config
 import datetime
 from passlib.hash import sha256_crypt
+from subprocess import call
 
 if __name__ == '__main__':
 	DB_URL = get_db_url()
@@ -32,9 +33,6 @@ if __name__ == '__main__':
 			db.create_all()
 			db.session.commit()
 
-			User.query.delete()
-			print('To reset ids run reset from heroku account')
-
 
 		# name, user_type, email, phone_number, dob, password, salt, last_offer_time
 		user1 = User('jacksmith@gmail.com', 'Jack Smith', sha256_crypt.hash('password1'))
@@ -50,7 +48,19 @@ if __name__ == '__main__':
 		bis1 = Business('Google', '1600 Ampitheatre Parkway', 1, 'jacksmith@gmail.com', 37.421512, -122.084101)
 		db.session.add(bis1)
 
-		its1 = Interest('Sporting Goods')
+		its1 = Interest('Sports')
+		db.session.add(its1)
+		its1 = Interest('Clothing')
+		db.session.add(its1)
+		its1 = Interest('Food')
+		db.session.add(its1)
+		its1 = Interest('Entertainment')
+		db.session.add(its1)
+		its1 = Interest('Technology')
+		db.session.add(its1)
+		its1 = Interest('Home Goods')
+		db.session.add(its1)
+		its1 = Interest('Transportation')
 		db.session.add(its1)
 		user1.interests.append(its1)
 
