@@ -117,6 +117,34 @@ class SingleOffer(Resource):
 
 
 
+	@jwt_required
+	def delete(self, _id):
+		#
+        # ENSURE OFFER TO DELETE EXISTS
+        #
+		offer = Offer.query.get(_id)
+		# If no offer exists with id, return error
+		if offer is None:
+			return {'error': 'offer does not exist'}
+
+
+		#
+        # ENSURE USER REQUESTING DELETE MANAGES BUSINESS OWNING OFFER
+        #
+		# Get business with offer's business id
+		business = Business.query.get(offer.business_id)
+		if business.manager_address != get_jwt_identity():
+			flask.abort(403)
+
+
+        # Delete the business
+        db.session.delete(offer)
+        db.session.commit()
+
+        # Return with a 204
+        return '', 204
+
+
 
 
 class BusinessOffers(Resource):
