@@ -14,6 +14,10 @@ from dateutil.tz import *
 
 from models import Business, Offer, Interest
 
+def perms(offer, identity):
+	resp = offer.serialize
+	resp['isOwner'] = offer.business.manager_address == identity
+	return resp 
 
 
 class AllOffers(Resource):
@@ -22,7 +26,8 @@ class AllOffers(Resource):
 		#
         # QUERY AND SERIALIZE ALL OFFERS
         #
-		resp = { "offers": [i.serialize for i in Offer.query.all()] }
+		email = get_jwt_identity()
+		resp = { "offers": [perms(i, email) for i in Offer.query.all()] }
 		
 		return resp
 
@@ -39,7 +44,8 @@ class SingleOffer(Resource):
 		if offer is None:
 			return {'error': 'offer does not exist'}
 
-		return offer.serialize
+		email = get_jwt_identity()
+		return perms(offer, email)
 
 	@jwt_required
 	def patch(self, _id):
@@ -115,7 +121,9 @@ class SingleOffer(Resource):
 
 		# Commit changes and return
 		db.session.commit()
-		return offer.serialize
+		resp = offer.serialize
+		resp['isOwner'] = True
+		return resp
 
 
 
@@ -159,9 +167,9 @@ class BusinessOffers(Resource):
 		if business is None:
 		    return {'error': 'business does not exist'}, 400
 
-
+		email = get_jwt_identity()
 		# Return list of all offers the business has
-		resp = {'offers': [o.serialize for o in business.offers]}
+		resp = {'offers': [perms(o, email) for o in business.offers]}
 		return resp
 
 
@@ -237,4 +245,6 @@ class BusinessOffers(Resource):
 			return {'error': 'offer with same description already owned by business'}, 400
 
 
-		return offer.serialize, 201
+		resp = offer.serialize
+		resp['isOwner'] = True
+		return resp, 201
