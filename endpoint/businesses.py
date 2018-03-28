@@ -14,7 +14,10 @@ import geopy
 
 from models import Business, City, Offer, Interest
 
-
+def perms(business, identity):
+    resp = business.serialize
+    resp['isOwner'] = business.manager_address == identity
+    return resp
 
 
 class BusinessCreate(Resource):
@@ -147,7 +150,9 @@ class BusinessCreate(Resource):
             db.session.rollback()
             return {'error': 'business at location in same city already exists'}, 400
 
-        return business.serialize, 201
+        resp = business.serialize
+        resp['isOwner'] = True
+        return resp, 201
 
 
 
@@ -170,9 +175,9 @@ class BusinessDML(Resource):
             return {'error': 'business does not exist'}, 400
 
 
-
+        email = get_jwt_identity()
         # Return with the business data
-        return business.serialize
+        return perms(business, email)
 
 
 
