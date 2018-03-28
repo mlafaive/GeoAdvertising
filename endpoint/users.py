@@ -380,7 +380,7 @@ class UserOffers(Resource):
 		# If difference in time between now and last offer is less than expected
 		#  return error, and no offer
 		if current_time - user.last_offer_time < datetime.timedelta(minutes=1):
-			return {'result': 'no offer at this time'}, 200
+			return {'result': 'no offer at this time'}, 404
 		
 
 
@@ -404,7 +404,7 @@ class UserOffers(Resource):
 		cities = City.query.all()
 		# If no cities found, do not proceed with search
 		if len(cities)==0:
-			return {'result': 'you are not located near any city'}, 200
+			return {'result': 'you are not located near any city'}, 404
 
 		# Calculate distance to user for each city
 		cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
@@ -416,7 +416,7 @@ class UserOffers(Resource):
 
 		# If the closest city is more than 24.14km(15mi) from user location, return no offers
 		if closest_city[1] > 24.14:
-			return {'result': 'you are not located near any city'}, 200
+			return {'result': 'you are not located near any city'}, 404
 
 		# Get city object of closest city to user
 		closest_city = closest_city[0]
@@ -429,7 +429,7 @@ class UserOffers(Resource):
 		# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY 
 		#
 		if len(closest_city.businesses)==0:
-			return {'result', 'there are no businesses in the closest city to you'}, 200
+			return {'result', 'there are no businesses in the closest city to you'}, 404
 		
 
 
@@ -455,7 +455,7 @@ class UserOffers(Resource):
 
 		# If no offers were found to be close, live and relevant, return no offer
 		if len(close_offers)==0:
-			return {'result': 'there are no close offers'}, 200
+			return {'result': 'there are no close offers'}, 404
 		
 
 
