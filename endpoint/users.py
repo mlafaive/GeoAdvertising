@@ -466,9 +466,7 @@ class UserOffers(Resource):
 		user.last_offer_time = current_time
 		db.session.commit()
 
-		# Pick and return a random offer from the list of close, relevant offers
-		rand_close_offer = random.choice(close_offers)
-		return {'result': rand_close_offer.serialize}, 200
+		return {'offers': [offer.serialize for offer in close_offers]}, 200
 
 
 
