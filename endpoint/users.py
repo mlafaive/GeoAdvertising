@@ -313,7 +313,8 @@ def loc_distance(user_loc,city_loc):
 
 
 
-
+def km_to_mi(km):
+	return 0.62137119224*km
 
 
 
@@ -434,7 +435,6 @@ class UserOffers(Resource):
 
 
 
-
 		#
 		# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
 		#
@@ -442,7 +442,7 @@ class UserOffers(Resource):
 		for business in closest_city.businesses:
 			# Check distance from business to user
 			business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
-			if business_dist < 0.2:
+			if business_dist < 0.3:
 				# Consider all offers of businesses within 0.2km(0.125mi) of user
 				for offer in business.offers:
 
@@ -451,12 +451,15 @@ class UserOffers(Resource):
 
 					# If offer is currently active and relevant to the user, add it to list
 					if offer_live and offer_relevant:
-						close_offers.append(offer)
+						close_offers.append((offer,business_dist))
 
 		# If no offers were found to be close, live and relevant, return no offer
 		if len(close_offers)==0:
 			return {'result': 'there are no close offers'}, 404
 		
+
+
+
 
 
 		#
@@ -466,7 +469,22 @@ class UserOffers(Resource):
 		user.last_offer_time = current_time
 		db.session.commit()
 
-		return {'offers': [offer.serialize for offer in close_offers]}, 200
+
+		
+		max_results=100
+		close_offers = close_offers[:max_results]
+		close_offers.sort(key=lambda tup: tup[1])
+
+
+
+		result_data = []
+		for close_offer in close_offers:
+			offer, dist = close_offer
+			offer_data = offer.serialize
+			offer_data["distance"] = km_to_mi(dist)
+			result_data.append(offer_data)
+
+		return {'offers': result_data}, 200
 
 
 
