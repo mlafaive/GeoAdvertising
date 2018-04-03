@@ -2,6 +2,7 @@ import flask
 from flask import *
 import flask_restful
 import flask_jwt_extended
+from flask_cors import CORS
 import controllers
 from controllers import *
 import endpoint
@@ -14,6 +15,9 @@ from extensions import *
 app = Flask(__name__)
 app.url_map.strict_slashes = False
 api = flask_restful.Api(app)
+
+# Alllow cross origin requests
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 
 # Register Flask Restful resources
 api.add_resource(UserCreate, '/api/users')

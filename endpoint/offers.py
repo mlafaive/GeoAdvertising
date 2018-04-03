@@ -17,7 +17,7 @@ from models import Business, Offer, Interest
 def perms(offer, identity):
 	resp = offer.serialize
 	resp['isOwner'] = offer.business.manager_address == identity
-	return resp 
+	return resp
 
 
 class AllOffers(Resource):
@@ -28,7 +28,7 @@ class AllOffers(Resource):
         #
 		email = get_jwt_identity()
 		resp = { "offers": [perms(i, email) for i in Offer.query.all()] }
-		
+
 		return resp
 
 
@@ -37,7 +37,7 @@ class SingleOffer(Resource):
 	@jwt_required
 	def get(self, _id):
 		#
-        # QUERY FOR OFFER WITH OFFER ID 
+        # QUERY FOR OFFER WITH OFFER ID
         #
 		offer = Offer.query.get(_id)
 		# If no offer exists with id, return error
@@ -218,6 +218,7 @@ class BusinessOffers(Resource):
 		if not isinstance(args["interests"], list):
 				return {'error': 'interests must be a list'}, 400
 
+		print("interests", args["interests"])
 		if not all(isinstance(x,int) for x in args["interests"]):
 			return {'error': 'interest ids must be integers'}, 400
 		# Convert interest names to Interest objects
