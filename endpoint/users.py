@@ -38,11 +38,6 @@ class UserCreate(Resource):
 		if re.match('^.{8,50}$', args['password']) is None:
 			return {'error': 'specified password is too short or too long'}, 400
 
-        
-
-
-
-
 		# Retrieve User with _email from DB
 		user = User.query.get(args["email"])
 
@@ -236,7 +231,7 @@ class UserDML(Resource):
 			user.name = args["name"]
 
 
-		
+
 		# Encrypt password if it was posted
 		if args['password'] is not None:
 			if args["old_password"] is None:
@@ -362,7 +357,7 @@ class UserOffers(Resource):
 			flask.abort(403)
 
 
-		
+
 
 
 		# Retrieve User with _email from DB
@@ -382,7 +377,7 @@ class UserOffers(Resource):
 		#  return error, and no offer
 		if current_time - user.last_offer_time < datetime.timedelta(minutes=1):
 			return {'result': 'no offer at this time'}, 404
-		
+
 
 
 
@@ -427,11 +422,11 @@ class UserOffers(Resource):
 
 
 		#
-		# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY 
+		# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY
 		#
 		if len(closest_city.businesses)==0:
 			return {'result', 'there are no businesses in the closest city to you'}, 404
-		
+
 
 
 
@@ -456,7 +451,7 @@ class UserOffers(Resource):
 		# If no offers were found to be close, live and relevant, return no offer
 		if len(close_offers)==0:
 			return {'result': 'there are no close offers'}, 404
-		
+
 
 
 
@@ -470,7 +465,7 @@ class UserOffers(Resource):
 		db.session.commit()
 
 
-		
+
 		max_results=100
 		close_offers = close_offers[:max_results]
 		close_offers.sort(key=lambda tup: tup[1])
@@ -485,25 +480,3 @@ class UserOffers(Resource):
 			result_data.append(offer_data)
 
 		return {'offers': result_data}, 200
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
