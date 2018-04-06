@@ -9,18 +9,20 @@ class User(db.Model):
     last_offer_time = db.Column(db.TIMESTAMP(timezone=True), nullable=True)
     businesses = db.relationship('Business', backref='manager', lazy=True, cascade='all, delete-orphan')
     interests = db.relationship('Interest', secondary=user_interest, lazy='subquery', backref=db.backref('users',lazy=True))
+    offers_viewed = db.relationship('Offer', secondary=user_offer, lazy='subquery', backref=db.backref('users_viewed',lazy=True))
 
-    def __init__(self, email, name, password, businesses=[], interests=[], last_offer_time=datetime.datetime.now(datetime.timezone.utc)):
+    def __init__(self, email, name, password, businesses=[], interests=[], offers_viewed=[], last_offer_time=datetime.datetime.now(datetime.timezone.utc)):
         self.email = email
         self.name = name
         self.password = password
         self.last_offer_time = last_offer_time
         self.businesses = businesses
         self.interests = interests
+        self.offers_viewed = offers_viewed
 
     def __repr__(self):
-        return "<email='%s', name='%s', password='%s', last_offer_time=%r, businesses=%r, interests=%r>" % \
-              (self.email, self.name, self.password, self.last_offer_time, [b.id for b in self.businesses], [i.name for i in self.interests])
+        return "<email='%s', name='%s', password='%s', last_offer_time=%r, businesses=%r, interests=%r, offers_viewed=%r>" % \
+              (self.email, self.name, self.password, self.last_offer_time, [b.id for b in self.businesses], [i.name for i in self.interests], [o.name for o in self.offers_viewed])
 
     @property
     def serialize(self):
@@ -30,4 +32,5 @@ class User(db.Model):
           'name': self.name,
           'last_offer_time': self.last_offer_time.isoformat(),
           'interests': [i.serialize for i in self.interests],
+          'offers_viewed': [o.serialize for o in self.offers_viewed],
        }
