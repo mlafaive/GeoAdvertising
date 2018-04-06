@@ -3,4 +3,3 @@ controllers/__pycache__/*
 .DS_Store
 *.pyc
 controllers/*.pyc
-config.py
