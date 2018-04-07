@@ -316,7 +316,7 @@ def km_to_mi(km):
 
 class UserOffers(Resource):
 	@jwt_required
-	def post(self, _email):
+	def get(self, _email):
 		# Pseudo code description of algorithm
 		#
 		#
