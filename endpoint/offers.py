@@ -124,7 +124,9 @@ class AllOffers(Resource):
 			if user is None:
 			   return {'error': 'user does not exist'}, 400
 
-
+			
+			
+			
 
 			#
 			# FIND CLOSEST CITY TO USER
@@ -162,7 +164,9 @@ class AllOffers(Resource):
 
 
 
-
+			# Get current time in utc, matching timezone of user.last_offer_time
+			current_time = datetime.datetime.now(datetime.timezone.utc)
+			
 			#
 			# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
 			#
