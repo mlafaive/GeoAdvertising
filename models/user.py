@@ -1,5 +1,6 @@
 from extensions import db
 from .user_interest import user_interest
+from .user_offer import user_offer
 import datetime
 
 class User(db.Model):
