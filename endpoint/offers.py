@@ -54,7 +54,8 @@ def km_to_mi(km):
 	return 0.62137119224*km
 
 
-
+def mi_to_km(mi):
+	return 1.60934*mi
 
 
 
@@ -74,7 +75,14 @@ class AllOffers(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('latitude', type=float, location='args')
 		parser.add_argument('longitude', type=float, location='args')
+		parser.add_argument('distance', type=float, location='args')
 		args = parser.parse_args()
+
+		if (args["distance"] is None):
+			filter_dist = mi_to_km(1)
+		else:
+			filter_dist = mi_to_km(args["distance"])
+
 
 
 
@@ -82,7 +90,7 @@ class AllOffers(Resource):
 			#
 			# QUERY AND SERIALIZE ALL OFFERS
 			#
-			resp = { "offers": [perms(i, email) for i in Offer.query.all()] }
+			resp = { "offers": [perms(i, email) for i in Offer.query.all()] }, 200
 
 			return resp
 
@@ -116,15 +124,7 @@ class AllOffers(Resource):
 			if user is None:
 			   return {'error': 'user does not exist'}, 400
 
-			#
-			# CHECK IF ENOUGH TIME HAS PASSED SINCE LAST OFFER
-			#
-			# Get current time in utc, matching timezone of user.last_offer_time
-			current_time = datetime.datetime.now(datetime.timezone.utc)
-			# If difference in time between now and last offer is less than expected
-			#  return error, and no offer
-			if current_time - user.last_offer_time < datetime.timedelta(minutes=1):
-				return {'result': 'no offer at this time'}, 404
+
 
 			#
 			# FIND CLOSEST CITY TO USER
@@ -133,7 +133,7 @@ class AllOffers(Resource):
 			cities = City.query.all()
 			# If no cities found, do not proceed with search
 			if len(cities)==0:
-				return {'result': 'you are not located near any city'}, 404
+				return {'offers': []}, 200
 
 			# Calculate distance to user for each city
 			cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
@@ -145,7 +145,7 @@ class AllOffers(Resource):
 
 			# If the closest city is more than 24.14km(15mi) from user location, return no offers
 			if closest_city[1] > 24.14:
-				return {'result': 'you are not located near any city'}, 404
+				return {'offers': []}, 200
 
 			# Get city object of closest city to user
 			closest_city = closest_city[0]
@@ -158,7 +158,7 @@ class AllOffers(Resource):
 			# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY
 			#
 			if len(closest_city.businesses)==0:
-				return {'result', 'there are no businesses in the closest city to you'}, 404
+				return {'offers', []}, 200
 
 
 
@@ -170,7 +170,7 @@ class AllOffers(Resource):
 			for business in closest_city.businesses:
 				# Check distance from business to user
 				business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
-				if business_dist < 0.3:
+				if business_dist < filter_dist:
 					# Consider all offers of businesses within 0.2km(0.125mi) of user
 					for offer in business.offers:
 
@@ -183,7 +183,7 @@ class AllOffers(Resource):
 
 			# If no offers were found to be close, live and relevant, return no offer
 			if len(close_offers)==0:
-				return {'result': 'there are no close offers'}, 404
+				return {'offers': []}, 200
 
 
 
