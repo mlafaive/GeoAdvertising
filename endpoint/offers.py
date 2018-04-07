@@ -54,7 +54,8 @@ def km_to_mi(km):
 	return 0.62137119224*km
 
 
-
+def mi_to_km(mi):
+	return 1.60934*mi
 
 
 
@@ -74,7 +75,14 @@ class AllOffers(Resource):
 		parser = reqparse.RequestParser()
 		parser.add_argument('latitude', type=float)
 		parser.add_argument('longitude', type=float)
+		parser.add_argument('distance', type=float)
 		args = parser.parse_args()
+
+		if (args["distance"] is None):
+			filter_dist = mi_to_km(1)
+		else:
+			filter_dist = mi_to_km(args["distance"])
+
 
 
 
@@ -170,7 +178,7 @@ class AllOffers(Resource):
 			for business in closest_city.businesses:
 				# Check distance from business to user
 				business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
-				if business_dist < 0.3:
+				if business_dist < filter_dist:
 					# Consider all offers of businesses within 0.2km(0.125mi) of user
 					for offer in business.offers:
 
@@ -183,7 +191,7 @@ class AllOffers(Resource):
 
 			# If no offers were found to be close, live and relevant, return no offer
 			if len(close_offers)==0:
-				return {'result': 'there are no close offers'}, 404
+				return {'result': 'there are no close offers'}, 200
 
 
 
