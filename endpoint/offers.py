@@ -73,9 +73,9 @@ class AllOffers(Resource):
 		# PARSE THE POSTED ARGUMENTS
 		#
 		parser = reqparse.RequestParser()
-		parser.add_argument('latitude', type=float)
-		parser.add_argument('longitude', type=float)
-		parser.add_argument('distance', type=float)
+		parser.add_argument('latitude', type=float, location='args')
+		parser.add_argument('longitude', type=float, location='args')
+		parser.add_argument('distance', type=float, location='args')
 		args = parser.parse_args()
 
 		if (args["distance"] is None):

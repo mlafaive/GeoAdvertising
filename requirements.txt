@@ -7,7 +7,7 @@ decorator==4.2.1
 Flask==0.12.2
 Flask-Cors==3.0.3
 Flask-JWT-Extended==3.7.2
-Flask-RESTful==0.3.6
+Flask-RESTful==0.3.5
 Flask-SQLAlchemy==2.3.2
 freeze==1.0.10
 geopy==1.11.0
