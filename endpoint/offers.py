@@ -6,13 +6,20 @@ from extensions import db
 from sqlalchemy import exc
 
 
+
 import ast
 import dateutil
 from dateutil import *
 from dateutil.tz import *
+import datetime
+
+from math import radians, sin, cos, sqrt, atan2
 
 
-from models import Business, Offer, Interest
+from models import User, Business, Offer, Interest, City
+
+
+
 
 def perms(offer, identity):
 	resp = offer.serialize
@@ -20,16 +27,192 @@ def perms(offer, identity):
 	return resp
 
 
+def loc_distance(user_loc,city_loc):
+	R=6373.0
+
+	user_lat,user_lon=user_loc
+	city_lat,city_lon=city_loc
+
+	user_lat_rad = radians(user_lat)
+	user_lon_rad = radians(user_lon)
+
+	city_lat_rad = radians(city_lat)
+	city_lon_rad = radians(city_lon)
+
+	diff_lat = user_lat_rad-city_lat_rad
+	diff_lon = user_lon_rad-city_lon_rad
+
+	a = sin(diff_lat/2)**2 + cos(user_lat_rad) * cos(city_lat_rad) * sin(diff_lon/2)**2
+	c = 2 * atan2(sqrt(a), sqrt(1-a))
+
+	dist = R * c
+
+	return dist
+
+
+def km_to_mi(km):
+	return 0.62137119224*km
+
+
+
+
+
+
+
+
 class AllOffers(Resource):
 	@jwt_required
 	def get(self):
-		#
-        # QUERY AND SERIALIZE ALL OFFERS
-        #
-		email = get_jwt_identity()
-		resp = { "offers": [perms(i, email) for i in Offer.query.all()] }
 
-		return resp
+
+		email = get_jwt_identity()
+
+
+		#
+		# PARSE THE POSTED ARGUMENTS
+		#
+		parser = reqparse.RequestParser()
+		parser.add_argument('latitude', type=float)
+		parser.add_argument('longitude', type=float)
+		args = parser.parse_args()
+
+
+
+		if (args['latitude'] is None or args['longitude'] is None):
+			#
+			# QUERY AND SERIALIZE ALL OFFERS
+			#
+			resp = { "offers": [perms(i, email) for i in Offer.query.all()] }
+
+			return resp
+
+		else:
+
+			# Pseudo code description of algorithm
+			#
+			#
+			# Check if user exists
+			#  if no, return error
+			#
+			# If user exists, check if enough time has passed since last offer
+			#  if no, return error
+			#
+			# Get all cities
+			# Calculate distance from cities to user
+			# Sort list of cities to find closest city
+			#  if closest city is further than 15 miles from user, return error
+			#
+			# If no businesses are located in closest city, return error
+			#
+			# For each business closer than 0.125mi to user in the closest city
+			#  for each offer of business
+			#   if offer shares any interest with user add it to list
+			#
+			# If any offers in list, return random offer
+
+			# Retrieve User with _email from DB
+			user = User.query.get(email)
+			# Check if user exists
+			if user is None:
+			   return {'error': 'user does not exist'}, 400
+
+			#
+			# CHECK IF ENOUGH TIME HAS PASSED SINCE LAST OFFER
+			#
+			# Get current time in utc, matching timezone of user.last_offer_time
+			current_time = datetime.datetime.now(datetime.timezone.utc)
+			# If difference in time between now and last offer is less than expected
+			#  return error, and no offer
+			if current_time - user.last_offer_time < datetime.timedelta(minutes=1):
+				return {'result': 'no offer at this time'}, 404
+
+			#
+			# FIND CLOSEST CITY TO USER
+			#
+			# Find all cities
+			cities = City.query.all()
+			# If no cities found, do not proceed with search
+			if len(cities)==0:
+				return {'result': 'you are not located near any city'}, 404
+
+			# Calculate distance to user for each city
+			cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
+			# Sort list of cities on distance to user in increasing order
+			cities.sort(key=lambda tup: tup[1])
+
+			# Get closest city to user at first position in list
+			closest_city = cities[0]
+
+			# If the closest city is more than 24.14km(15mi) from user location, return no offers
+			if closest_city[1] > 24.14:
+				return {'result': 'you are not located near any city'}, 404
+
+			# Get city object of closest city to user
+			closest_city = closest_city[0]
+
+
+
+
+
+			#
+			# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY
+			#
+			if len(closest_city.businesses)==0:
+				return {'result', 'there are no businesses in the closest city to you'}, 404
+
+
+
+
+			#
+			# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
+			#
+			close_offers = []
+			for business in closest_city.businesses:
+				# Check distance from business to user
+				business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
+				if business_dist < 0.3:
+					# Consider all offers of businesses within 0.2km(0.125mi) of user
+					for offer in business.offers:
+
+						offer_live = (offer.start_time < current_time and current_time < offer.end_time)
+						offer_relevant = (not set(offer.interests).isdisjoint(user.interests))
+
+						# If offer is currently active and relevant to the user, add it to list
+						if offer_live and offer_relevant:
+							close_offers.append((offer,business_dist))
+
+			# If no offers were found to be close, live and relevant, return no offer
+			if len(close_offers)==0:
+				return {'result': 'there are no close offers'}, 404
+
+
+
+
+
+
+			#
+			# Otherwise return a random close, live and relevant offer
+			#
+			# Update last_offer_time of user to now
+			user.last_offer_time = current_time
+			db.session.commit()
+
+
+
+			max_results=100
+			close_offers = close_offers[:max_results]
+			close_offers.sort(key=lambda tup: tup[1])
+
+
+
+			result_data = []
+			for close_offer in close_offers:
+				offer, dist = close_offer
+				offer_data = offer.serialize
+				offer_data["distance"] = km_to_mi(dist)
+				result_data.append(offer_data)
+
+			return {'offers': result_data}, 200
 
 
 

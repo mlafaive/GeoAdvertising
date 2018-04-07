@@ -123,12 +123,12 @@ if __name__ == '__main__':
 		db.session.commit()
 
 
-		off1 = Offer(bis1.id, datetime.datetime(2018,3,28, 12,0,0), datetime.datetime(2018,3,28, 16,0,0), 'Free reuben sandwhiches until 4:00pm EST!!!')
-		off2 = Offer(bis1.id, datetime.datetime(2018,3,28, 16,0,0), datetime.datetime(2018,3,28, 23,59,59), 'Reuben sandwhiches with 240% markup to cover the cost of our earlier deal!')
-		off3 = Offer(bis2.id, datetime.datetime(2018,3,28, 20,0,0), datetime.datetime(2018,3,29, 5,0,0), 'Night at the museum -- Watch as everything comes to life!')
-		off4 = Offer(bis3.id, datetime.datetime(2018,3,28, 1,0,0), datetime.datetime(2018,3,29, 23,59,59), '2 for the price of 1 discount on green flavored bubbles :)')
-		off5 = Offer(bis4.id, datetime.datetime(2018,3,28, 12,0,0), datetime.datetime(2018,3,29, 16,30,0), "Free legal advice . . . JK it'll cost you")
-		off6 = Offer(bis7.id, datetime.datetime(2018,3,28, 0,0,0), datetime.datetime(2018,3,29, 23,59,59), "Come watch spring training practice!!")
+		off1 = Offer(bis1.id, datetime.datetime(2016,3,28, 12,0,0), datetime.datetime(2019,3,28, 16,0,0), 'Free reuben sandwhiches until 4:00pm EST!!!')
+		off2 = Offer(bis1.id, datetime.datetime(2016,3,28, 16,0,0), datetime.datetime(2019,3,28, 23,59,59), 'Reuben sandwhiches with 240% markup to cover the cost of our earlier deal!')
+		off3 = Offer(bis2.id, datetime.datetime(2016,3,28, 20,0,0), datetime.datetime(2019,3,29, 5,0,0), 'Night at the museum -- Watch as everything comes to life!')
+		off4 = Offer(bis3.id, datetime.datetime(2016,3,28, 1,0,0), datetime.datetime(2019,3,29, 23,59,59), '2 for the price of 1 discount on green flavored bubbles :)')
+		off5 = Offer(bis4.id, datetime.datetime(2016,3,28, 12,0,0), datetime.datetime(2019,3,29, 16,30,0), "Free legal advice . . . JK it'll cost you")
+		off6 = Offer(bis7.id, datetime.datetime(2016,3,28, 0,0,0), datetime.datetime(2019,3,29, 23,59,59), "Come watch spring training practice!!")
 
 
 		off1.interests.append(its3)
