@@ -218,14 +218,12 @@ class AllOffers(Resource):
 
 			return {'offers': result_data}, 200
 
-
-
-class SingleOffer(Resource):
+class AcceptOffer(Resource):
 	@jwt_required
-	def get(self, _id):
+	def post(self, _id):
 		#
-        # QUERY FOR OFFER WITH OFFER ID
-        #
+		# QUERY FOR OFFER WITH OFFER ID
+		#
 		offer = Offer.query.get(_id)
 		# If no offer exists with id, return error
 		if offer is None:
@@ -237,8 +235,31 @@ class SingleOffer(Resource):
 		# Check if user exists
 		if user is None:
 			return {'error': 'user does not exist'}, 400
-		user.offers_viewed.append(offer)
+		offer.users_accepted.append(user)
+		db.session.commit()
+		
+		return 200
 
+
+class SingleOffer(Resource):
+	@jwt_required
+	def get(self, _id):
+		#
+		# QUERY FOR OFFER WITH OFFER ID
+		#
+		offer = Offer.query.get(_id)
+		# If no offer exists with id, return error
+		if offer is None:
+			return {'error': 'offer does not exist'}
+
+		email = get_jwt_identity()
+
+		user = User.query.get(email)
+		# Check if user exists
+		if user is None:
+			return {'error': 'user does not exist'}, 400
+		offer.users_viewed.append(user)
+		db.session.commit()
 		return perms(offer, email)
 
 	@jwt_required
@@ -443,3 +464,8 @@ class BusinessOffers(Resource):
 		resp = offer.serialize
 		resp['isOwner'] = True
 		return resp, 201
+
+
+
+
+
