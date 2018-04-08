@@ -264,6 +264,9 @@ class SingleOffer(Resource):
 		resp = perms(offer, email)
 		resp['business']['latitude'] = b.latitude
 		resp['business']['longitude'] = b.longitude
+
+		resp['accepted'] = offer in user.offers_accepted
+		
 		return resp
 
 	@jwt_required
