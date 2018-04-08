@@ -39,5 +39,7 @@ class Offer(db.Model):
            'start_time': self.start_time.isoformat(),
            'end_time': self.end_time.isoformat(),
            'description': self.description,
-           'interests': [i.serialize for i in self.interests]
+           'interests': [i.serialize for i in self.interests],
+           'views': len(self.users_viewed),
+           'accepts': len(self.users_accepted),
        }

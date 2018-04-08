@@ -166,7 +166,7 @@ class AllOffers(Resource):
 
 			# Get current time in utc, matching timezone of user.last_offer_time
 			current_time = datetime.datetime.now(datetime.timezone.utc)
-			
+
 			#
 			# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
 			#
@@ -232,6 +232,13 @@ class SingleOffer(Resource):
 			return {'error': 'offer does not exist'}
 
 		email = get_jwt_identity()
+
+		user = User.query.get(email)
+		# Check if user exists
+		if user is None:
+			return {'error': 'user does not exist'}, 400
+		user.offers_viewed.append(offer)
+
 		return perms(offer, email)
 
 	@jwt_required
