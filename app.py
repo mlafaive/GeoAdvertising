@@ -29,6 +29,7 @@ api.add_resource(BusinessDML, '/api/businesses/<int:_id>')
 api.add_resource(BusinessOffers, '/api/businesses/<int:_id>/offers')
 api.add_resource(AllOffers, '/api/offers')
 api.add_resource(SingleOffer, '/api/offers/<int:_id>')
+api.add_resource(AcceptOffer, '/api/offers/<int:_id>/accept')
 api.add_resource(UserBusinesses, '/api/users/<string:_email>/businesses')
 api.add_resource(AllInterests, '/api/interests')
 
