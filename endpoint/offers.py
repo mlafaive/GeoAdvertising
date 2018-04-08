@@ -90,7 +90,7 @@ class AllOffers(Resource):
 			#
 			# QUERY AND SERIALIZE ALL OFFERS
 			#
-			resp = { "offers": [perms(i, email) for i in Offer.query.all()] }, 200
+			resp = { "offers": [i.serialize for i in Offer.query.all()] }, 200
 
 			return resp
 
@@ -260,7 +260,11 @@ class SingleOffer(Resource):
 			return {'error': 'user does not exist'}, 400
 		offer.users_viewed.append(user)
 		db.session.commit()
-		return perms(offer, email)
+		b = offer.business
+		resp = perms(offer, email)
+		resp['business']['latitude'] = b.latitude
+		resp['business']['longitude'] = b.longitude
+		return resp
 
 	@jwt_required
 	def patch(self, _id):
