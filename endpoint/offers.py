@@ -374,7 +374,7 @@ class SingleOffer(Resource):
 		db.session.commit()
 
 		# Return with a 204
-		return {}, 204
+		return {}, 200
 
 
 
