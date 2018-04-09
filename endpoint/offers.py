@@ -238,7 +238,7 @@ class AcceptOffer(Resource):
 		offer.users_accepted.append(user)
 		db.session.commit()
 		
-		return 200
+		return {}, 200
 
 
 class SingleOffer(Resource):
