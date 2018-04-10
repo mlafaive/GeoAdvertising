@@ -279,17 +279,19 @@ class SingleOffer(Resource):
 		if offer is None:
 			return {'error': 'offer does not exist'}
 
-
-
 		#
         # ENSURE USER REQUESTING PATCH MANAGES BUSINESS OWNING OFFER
         #
 		# Get business with offer's business id
+		email = get_jwt_identity()
 		business = Business.query.get(offer.business_id)
-		if business.manager_address != get_jwt_identity():
+		if business.manager_address != email:
 			flask.abort(403)
 
-
+		user = User.query.get(email)
+		# Check if user exists
+		if user is None:
+			return {'error': 'user does not exist'}, 400
 
 		#
 		# PARSE THE REQUEST BODY
@@ -345,6 +347,7 @@ class SingleOffer(Resource):
 		db.session.commit()
 		resp = offer.serialize
 		resp['isOwner'] = True
+		resp['accepted'] = offer in user.offers_accepted
 		return resp
 
 
