@@ -266,6 +266,16 @@ class SingleOffer(Resource):
 		resp['business']['longitude'] = b.longitude
 
 		resp['accepted'] = offer in user.offers_accepted
+
+		resp['accepted_segments'] = {}
+
+		interests = Interest.query.all()
+		for interest in interests:
+			resp['accepted_segments'][interest.name] = 0
+
+		for acc_user in offer.users_accepted:
+			for user_interest in acc_user.interests:
+				resp['accepted_segments'][user_interest.name] += 1
 		
 		return resp
 
