@@ -124,6 +124,18 @@ if __name__ == '__main__':
 		db.session.commit()
 
 
+		# Randomly assign interests to users
+		for email, user in users.items():
+			num_user_ints = random.randint(1, 20)
+			chosen=[]
+			for i in range(num_user_ints):
+				rand_off = random.choice(list(set(offers.values())-set(chosen)))
+				user.offers_viewed.append(rand_off)
+				user.offers_accepted.append(rand_off)
+				chosen.append(rand_off)
+		db.session.commit()
+
+
 
 
 		
