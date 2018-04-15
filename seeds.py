@@ -91,7 +91,7 @@ if __name__ == '__main__':
 
 
 		# Randomly generate offers for businesses
-		offer_data = {'Sports': ['Free baseball tickets, first 50 to accept!!', 'Expensive student tickets in the upper bowl!! We love our students ;)', '2 free football tix with purchase of 2 coke zeros!!!!', '75% off baby boomer discount for football tickets in the quiet sections.', '100% discount on all non-revenue sports tickets!!', "Come watch spring training practice!!"]+['Random sports offer #'+str(i) for i in range(250)],
+		offer_data = {'Sports': ['Free baseball tickets, first 50 to accept!!', 'Expensive student tickets in the upper bowl!! We love our students ;)', '2 free football tix with purchase of 2 coke zeros!!!!', '75% off baby boomer discount for football tickets in the quiet sections.', '100% discount on all non-revenue sports tickets!!', "Come watch spring training practice!!"]+['Random sports offer #'+str(i) for i in range(100)],
 					'Food': ['$5 for 12 inches of bread, meat and lettuce! (legally we can\'t call it a foot long)', '10% off all products expiring in the next 24 hours!!!!', '100% off all dumpster finds! Must pick up before Tuesday.', '42% off all wood-pulp based products.', 'Reuben sandwhiches with 240% markup to cover the cost of our earlier deal!']+['Random food offer #'+str(i) for i in range(100)],
 					'Entertainment': ['10% off tickets to loud concert! Sponsored by your local hearing doctors.', '$0.01 off for every insta follower you have.', 'Night at the museum -- Watch as everything comes to life!']+['Random entertainment offer #'+str(i) for i in range(100)],
 					}
@@ -121,6 +121,29 @@ if __name__ == '__main__':
 				rand_int = random.choice(list(set(interest_data)-set(chosen)))
 				user.interests.append(interests[rand_int])
 				chosen.append(rand_int)
+		db.session.commit()
+
+
+
+		user_viewed={}
+		# Randomly assign interests to users
+		for email, user in users.items():
+			num_user_ints = random.randint(10, 50)
+			user_viewed[email] = []
+			for i in range(num_user_ints):
+				rand_off = random.choice(list(set(offers.values())-set(user_viewed[email])))
+				user.offers_viewed.append(rand_off)
+				user_viewed[email].append(rand_off)
+		db.session.commit()
+
+		# Randomly assign interests to users
+		for email, user in users.items():
+			num_user_ints = random.randint(0, len(user_viewed[email]))
+			chosen=[]
+			for i in range(num_user_ints):
+				rand_off = random.choice(list(set(user_viewed[email])-set(chosen)))
+				user.offers_accepted.append(rand_off)
+				chosen.append(rand_off)
 		db.session.commit()
 
 
