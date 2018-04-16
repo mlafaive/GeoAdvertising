@@ -90,9 +90,6 @@ class BusinessCreate(Resource):
             store_address = location.address.split(",")[0].strip()
             city_name = location.address.split(",")[1].strip()
             state_name = location.address.split(",")[2].split()[0].strip()
-            print(location.raw)
-            print(args["store_address"], args["city_name"], args["state_name"])
-            print(location.address.split(","), store_address, city_name, state_name)
             
             # Get the timzone of the store using its latitude and longitude
             timezone = geo.timezone((location.latitude, location.longitude))

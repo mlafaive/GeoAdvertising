@@ -132,25 +132,25 @@ class AllOffers(Resource):
 			# FIND CLOSEST CITY TO USER
 			#
 			# Find all cities
-			cities = City.query.all()
+			#cities = City.query.all()
 			# If no cities found, do not proceed with search
-			if len(cities)==0:
-				return {'offers': []}, 200
+			#if len(cities)==0:
+			#	return {'offers': []}, 200
 
 			# Calculate distance to user for each city
-			cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
+			#cities = [(city, loc_distance((args['latitude'],args['longitude']),(city.latitude, city.longitude))) for city in cities]
 			# Sort list of cities on distance to user in increasing order
-			cities.sort(key=lambda tup: tup[1])
+			#cities.sort(key=lambda tup: tup[1])
 
 			# Get closest city to user at first position in list
-			closest_city = cities[0]
+			#closest_city = cities[0]
 
 			# If the closest city is more than 24.14km(15mi) from user location, return no offers
-			if closest_city[1] > 24.14:
-				return {'offers': []}, 200
+			#if closest_city[1] > 24.14:
+			#	return {'offers': []}, 200
 
 			# Get city object of closest city to user
-			closest_city = closest_city[0]
+			#closest_city = closest_city[0]
 
 
 
@@ -159,10 +159,10 @@ class AllOffers(Resource):
 			#
 			# CHECK IF THERE ARE BUSINESSES IN CLOSEST CITY
 			#
-			if len(closest_city.businesses)==0:
-				return {'offers', []}, 200
+			#if len(closest_city.businesses)==0:
+			#	return {'offers', []}, 200
 
-
+			businesses = Business.query.all()
 
 			# Get current time in utc, matching timezone of user.last_offer_time
 			current_time = datetime.datetime.now(datetime.timezone.utc)
@@ -171,17 +171,16 @@ class AllOffers(Resource):
 			# FIND RELEVANT, LIVE OFFERS IN CLOSEST CITY
 			#
 			close_offers = []
-			for business in closest_city.businesses:
+			for business in businesses:
 				# Check distance from business to user
 				business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
-				print(business_dist, filter_dist, business_dist < filter_dist, business)
 				if business_dist < filter_dist:
 					# Consider all offers of businesses within 0.2km(0.125mi) of user
 					for offer in business.offers:
 
 						offer_live = (offer.start_time < current_time and current_time < offer.end_time)
 						offer_relevant = (not set(offer.interests).isdisjoint(user.interests))
-						print(offer_live, offer_relevant, offer)
+
 						# If offer is currently active and relevant to the user, add it to list
 						if offer_live and offer_relevant:
 							close_offers.append((offer,business_dist))
