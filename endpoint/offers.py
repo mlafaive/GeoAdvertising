@@ -174,13 +174,14 @@ class AllOffers(Resource):
 			for business in closest_city.businesses:
 				# Check distance from business to user
 				business_dist = loc_distance((args['latitude'],args['longitude']),(business.latitude, business.longitude))
+				print(business_dist, filter_dist, business_dist < filter_dist, business)
 				if business_dist < filter_dist:
 					# Consider all offers of businesses within 0.2km(0.125mi) of user
 					for offer in business.offers:
 
 						offer_live = (offer.start_time < current_time and current_time < offer.end_time)
 						offer_relevant = (not set(offer.interests).isdisjoint(user.interests))
-
+						print(offer_live, offer_relevant, offer)
 						# If offer is currently active and relevant to the user, add it to list
 						if offer_live and offer_relevant:
 							close_offers.append((offer,business_dist))
